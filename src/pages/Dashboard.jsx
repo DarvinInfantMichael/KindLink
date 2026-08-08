@@ -18,7 +18,7 @@ L.Icon.Default.mergeOptions({
 });
 
 export default function Dashboard() {
-  const { user, logout, ngos, addDonation, donations } = useAuth();
+  const { user, logout, ngos, addDonation, updateDonationStatus, donations } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -55,7 +55,7 @@ export default function Dashboard() {
         {user?.role === 'donator' ? (
           <DonatorDashboard ngos={ngos} addDonation={addDonation} currentUser={user} donations={donations} />
         ) : (
-          <ReceiverDashboard donations={donations} currentUser={user} />
+          <ReceiverDashboard donations={donations} currentUser={user} updateDonationStatus={updateDonationStatus} />
         )}
       </main>
     </div>
@@ -363,10 +363,17 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations }) {
                     </p>
                   </div>
                   <div className="text-right">
-                    <span className="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-md bg-yellow-50 text-yellow-700 text-xs font-semibold border border-yellow-100">
-                      <span className="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse"></span>
-                      Pending
-                    </span>
+                    {donation.status === 'approved' ? (
+                      <span className="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-md bg-green-50 text-green-700 text-xs font-semibold border border-green-100">
+                        <CheckCircle2 className="w-3 h-3" />
+                        Approved
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-md bg-yellow-50 text-yellow-700 text-xs font-semibold border border-yellow-100">
+                        <span className="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse"></span>
+                        Pending
+                      </span>
+                    )}
                   </div>
                 </div>
               );
@@ -378,7 +385,7 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations }) {
   );
 }
 
-function ReceiverDashboard({ donations, currentUser }) {
+function ReceiverDashboard({ donations, currentUser, updateDonationStatus }) {
   // Filter donations meant for this NGO
   const myDonations = donations.filter(d => d.ngoId === currentUser.id);
 
@@ -425,10 +432,17 @@ function ReceiverDashboard({ donations, currentUser }) {
                     </div>
                   </div>
                   <div className="pt-3 border-t border-gray-100 flex items-center justify-between">
-                    <span className="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-md bg-yellow-50 text-yellow-700 text-xs font-semibold border border-yellow-100">
-                      <span className="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse"></span>
-                      Pending Pickup
-                    </span>
+                    {donation.status === 'approved' ? (
+                      <span className="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-md bg-green-50 text-green-700 text-xs font-semibold border border-green-100">
+                        <CheckCircle2 className="w-3 h-3" />
+                        Acknowledged
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-md bg-yellow-50 text-yellow-700 text-xs font-semibold border border-yellow-100">
+                        <span className="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse"></span>
+                        Pending Pickup
+                      </span>
+                    )}
                     {donation.location && (
                       <a 
                         href={`https://www.google.com/maps?q=${donation.location.lat},${donation.location.lng}`} 
@@ -441,8 +455,16 @@ function ReceiverDashboard({ donations, currentUser }) {
                     )}
                   </div>
                 </div>
-                <button className="mt-5 w-full py-2 bg-brand-50 text-brand-700 hover:bg-brand-100 font-medium rounded-lg transition-colors text-sm">
-                  Acknowledge Receipt
+                <button 
+                  onClick={() => updateDonationStatus(donation.id, 'approved')}
+                  disabled={donation.status === 'approved'}
+                  className={`mt-5 w-full py-2 font-medium rounded-lg transition-colors text-sm ${
+                    donation.status === 'approved' 
+                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      : 'bg-brand-50 text-brand-700 hover:bg-brand-100'
+                  }`}
+                >
+                  {donation.status === 'approved' ? 'Receipt Acknowledged' : 'Acknowledge Receipt'}
                 </button>
               </div>
             </div>

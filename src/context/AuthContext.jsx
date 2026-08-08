@@ -58,6 +58,12 @@ export const AuthProvider = ({ children }) => {
     setDonations((prev) => [{ ...donationData, id: Date.now().toString() }, ...prev]);
   };
 
+  const updateDonationStatus = (donationId, newStatus) => {
+    setDonations((prev) => 
+      prev.map(d => d.id === donationId ? { ...d, status: newStatus } : d)
+    );
+  };
+
   const registerNgo = (ngoData) => {
     setNgos((prev) => [...prev, { ...ngoData, id: Date.now().toString() }]);
   };
@@ -67,7 +73,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, donations, addDonation, ngos, registerNgo, users, registerUser }}>
+    <AuthContext.Provider value={{ user, login, logout, donations, addDonation, updateDonationStatus, ngos, registerNgo, users, registerUser }}>
       {children}
     </AuthContext.Provider>
   );
