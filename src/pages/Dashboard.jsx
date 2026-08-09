@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, ImagePlus, Calendar, Clock, HeartHandshake, CheckCircle2, ChevronDown, MapPin } from 'lucide-react';
+import { LogOut, ImagePlus, Calendar, Clock, HeartHandshake, CheckCircle2, ChevronDown, MapPin, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
@@ -18,7 +18,7 @@ L.Icon.Default.mergeOptions({
 });
 
 export default function Dashboard() {
-  const { user, logout, ngos, addDonation, updateDonationStatus, donations } = useAuth();
+  const { user, logout, ngos, addDonation, updateDonationStatus, donations, users } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -55,7 +55,7 @@ export default function Dashboard() {
         {user?.role === 'donator' ? (
           <DonatorDashboard ngos={ngos} addDonation={addDonation} currentUser={user} donations={donations} />
         ) : (
-          <ReceiverDashboard donations={donations} currentUser={user} updateDonationStatus={updateDonationStatus} />
+          <ReceiverDashboard donations={donations} currentUser={user} updateDonationStatus={updateDonationStatus} users={users} />
         )}
       </main>
     </div>
@@ -151,191 +151,191 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations }) {
 
   const categories = ['Food', 'Furniture', 'Clothes', 'Books', 'Other'];
 
-  if (success) {
-    return (
-      <div className="glass max-w-2xl mx-auto rounded-2xl p-12 text-center animate-fade-in flex flex-col items-center">
-        <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
-          <CheckCircle2 className="w-10 h-10 text-green-500" />
-        </div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Donation Scheduled!</h2>
-        <p className="text-gray-500 mb-8">Thank you for your kindness. The NGO has been notified.</p>
-        <button onClick={() => setSuccess(false)} className="text-brand-600 font-medium hover:text-brand-700">
-          Make another donation
-        </button>
-      </div>
-    );
-  }
-
   return (
     <div className="glass max-w-2xl mx-auto rounded-2xl p-6 sm:p-8 animate-fade-in">
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-1">Make a Donation</h2>
-        <p className="text-gray-500 text-sm">Fill out the details below to schedule your pickup/drop-off.</p>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* NGO Selection */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Select Organization</label>
-          <div className="relative">
-            <select
-              required
-              value={selectedNgo}
-              onChange={(e) => setSelectedNgo(e.target.value)}
-              className="w-full appearance-none rounded-xl border-gray-200 bg-white/50 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all py-3 pl-4 pr-10 shadow-sm border"
-            >
-              <option value="" disabled>Choose an NGO...</option>
-              {ngos.map((ngo) => (
-                <option key={ngo.id} value={ngo.id}>{ngo.name} ({ngo.category})</option>
-              ))}
-            </select>
-            <ChevronDown className="absolute right-3 top-3.5 h-5 w-5 text-gray-400 pointer-events-none" />
+      {success ? (
+        <div className="py-12 text-center animate-fade-in flex flex-col items-center">
+          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
+            <CheckCircle2 className="w-10 h-10 text-green-500" />
           </div>
-        </div>
-
-        {/* Category */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">What are you donating?</label>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => setCategory(cat)}
-                className={`py-2 px-4 rounded-xl border transition-all text-sm font-medium ${
-                  category === cat 
-                    ? 'border-brand-500 bg-brand-50 text-brand-700 shadow-sm' 
-                    : 'border-gray-200 bg-white hover:border-brand-200 text-gray-600 hover:bg-gray-50'
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Custom Category Input */}
-        {category === 'Other' && (
-          <div className="animate-fade-in">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Please specify</label>
-            <input
-              type="text"
-              required
-              value={customCategory}
-              onChange={(e) => setCustomCategory(e.target.value)}
-              className="w-full rounded-xl border-gray-200 bg-white/50 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all py-2.5 px-4 shadow-sm border"
-              placeholder="E.g., Blankets, Toys"
-            />
-          </div>
-        )}
-
-        {/* Image Upload */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Upload Image</label>
-          <div 
-            onClick={() => fileInputRef.current?.click()}
-            className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all ${
-              imagePreview ? 'border-brand-500 bg-brand-50/50' : 'border-gray-300 hover:border-brand-400 hover:bg-gray-50'
-            }`}
-          >
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleImageChange}
-              accept="image/*"
-              className="hidden"
-            />
-            {imagePreview ? (
-              <div className="relative w-full aspect-video rounded-lg overflow-hidden shadow-sm">
-                <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <span className="text-white font-medium flex items-center gap-2">
-                    <ImagePlus className="w-5 h-5" /> Change Image
-                  </span>
-                </div>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center text-gray-500">
-                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
-                  <ImagePlus className="w-6 h-6 text-gray-400" />
-                </div>
-                <span className="font-medium text-gray-700 mb-1">Click to upload a photo</span>
-                <span className="text-xs">PNG, JPG up to 5MB</span>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Date and Time */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Preferred Date</label>
-            <div className="relative">
-              <input
-                type="date"
-                required
-                value={dateSlot}
-                onChange={(e) => setDateSlot(e.target.value)}
-                min={new Date().toISOString().split('T')[0]}
-                className="w-full rounded-xl border-gray-200 bg-white/50 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all py-2.5 pl-10 shadow-sm border"
-              />
-              <Calendar className="absolute left-3 top-3 h-5 w-5 text-gray-400 pointer-events-none" />
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Preferred Time Slot</label>
-            <div className="relative">
-              <select
-                required
-                value={timeSlot}
-                onChange={(e) => setTimeSlot(e.target.value)}
-                className="w-full appearance-none rounded-xl border-gray-200 bg-white/50 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all py-2.5 pl-10 pr-10 shadow-sm border"
-              >
-                <option value="" disabled>Select a slot...</option>
-                <option value="Morning (9AM - 12PM)">Morning (9AM - 12PM)</option>
-                <option value="Afternoon (12PM - 4PM)">Afternoon (12PM - 4PM)</option>
-                <option value="Evening (4PM - 7PM)">Evening (4PM - 7PM)</option>
-              </select>
-              <Clock className="absolute left-3 top-3 h-5 w-5 text-gray-400 pointer-events-none" />
-              <ChevronDown className="absolute right-3 top-3 h-5 w-5 text-gray-400 pointer-events-none" />
-            </div>
-          </div>
-        </div>
-
-        {/* Map Location Picker */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Pickup Location</label>
-          <p className="text-xs text-gray-500 mb-3">Drag the map and click to pinpoint your exact pickup location.</p>
-          <div className="h-64 w-full rounded-2xl overflow-hidden border border-gray-200 shadow-sm relative z-0">
-            <MapContainer 
-              center={location} 
-              zoom={13} 
-              scrollWheelZoom={false} 
-              className="w-full h-full"
-            >
-              <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
-              <LocationMarker />
-            </MapContainer>
-          </div>
-        </div>
-
-        <div className="pt-4 border-t border-gray-100">
-          <button
-            type="submit"
-            disabled={isSubmitting || !selectedNgo || !category || (category==='Other' && !customCategory) || !dateSlot || !timeSlot}
-            className="w-full bg-brand-600 hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-3.5 rounded-xl transition-all shadow-lg shadow-brand-500/30 active:scale-[0.98]"
-          >
-            {isSubmitting ? 'Scheduling...' : 'Schedule Donation'}
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Donation Scheduled!</h2>
+          <p className="text-gray-500 mb-8">Thank you for your kindness. The NGO has been notified.</p>
+          <button onClick={() => setSuccess(false)} className="text-brand-600 font-medium hover:text-brand-700">
+            Make another donation
           </button>
         </div>
-      </form>
+      ) : (
+        <>
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-1">Make a Donation</h2>
+            <p className="text-gray-500 text-sm">Fill out the details below to schedule your pickup/drop-off.</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* NGO Selection */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Select Organization</label>
+              <div className="relative">
+                <select
+                  required
+                  value={selectedNgo}
+                  onChange={(e) => setSelectedNgo(e.target.value)}
+                  className="w-full appearance-none rounded-xl border-gray-200 bg-white/50 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all py-3 pl-4 pr-10 shadow-sm border"
+                >
+                  <option value="" disabled>Choose an NGO...</option>
+                  {ngos.map((ngo) => (
+                    <option key={ngo.id} value={ngo.id}>{ngo.name} ({ngo.category}) - {ngo.rating ? ngo.rating.toFixed(1) : '5.0'} ⭐</option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-3 top-3.5 h-5 w-5 text-gray-400 pointer-events-none" />
+              </div>
+            </div>
+
+            {/* Category */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">What are you donating?</label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {categories.map((cat) => (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => setCategory(cat)}
+                    className={`py-2 px-4 rounded-xl border transition-all text-sm font-medium ${
+                      category === cat 
+                        ? 'border-brand-500 bg-brand-50 text-brand-700 shadow-sm' 
+                        : 'border-gray-200 bg-white hover:border-brand-200 text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Custom Category Input */}
+            {category === 'Other' && (
+              <div className="animate-fade-in">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Please specify</label>
+                <input
+                  type="text"
+                  required
+                  value={customCategory}
+                  onChange={(e) => setCustomCategory(e.target.value)}
+                  className="w-full rounded-xl border-gray-200 bg-white/50 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all py-2.5 px-4 shadow-sm border"
+                  placeholder="E.g., Blankets, Toys"
+                />
+              </div>
+            )}
+
+            {/* Image Upload */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Upload Image</label>
+              <div 
+                onClick={() => fileInputRef.current?.click()}
+                className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all ${
+                  imagePreview ? 'border-brand-500 bg-brand-50/50' : 'border-gray-300 hover:border-brand-400 hover:bg-gray-50'
+                }`}
+              >
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleImageChange}
+                  accept="image/*"
+                  className="hidden"
+                />
+                {imagePreview ? (
+                  <div className="relative w-full aspect-video rounded-lg overflow-hidden shadow-sm">
+                    <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <span className="text-white font-medium flex items-center gap-2">
+                        <ImagePlus className="w-5 h-5" /> Change Image
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center text-gray-500">
+                    <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
+                      <ImagePlus className="w-6 h-6 text-gray-400" />
+                    </div>
+                    <span className="font-medium text-gray-700 mb-1">Click to upload a photo</span>
+                    <span className="text-xs">PNG, JPG up to 5MB</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Date and Time */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Preferred Date</label>
+                <div className="relative">
+                  <input
+                    type="date"
+                    required
+                    value={dateSlot}
+                    onChange={(e) => setDateSlot(e.target.value)}
+                    min={new Date().toISOString().split('T')[0]}
+                    className="w-full rounded-xl border-gray-200 bg-white/50 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all py-2.5 pl-10 shadow-sm border"
+                  />
+                  <Calendar className="absolute left-3 top-3 h-5 w-5 text-gray-400 pointer-events-none" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Preferred Time Slot</label>
+                <div className="relative">
+                  <select
+                    required
+                    value={timeSlot}
+                    onChange={(e) => setTimeSlot(e.target.value)}
+                    className="w-full appearance-none rounded-xl border-gray-200 bg-white/50 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all py-2.5 pl-10 pr-10 shadow-sm border"
+                  >
+                    <option value="" disabled>Select a slot...</option>
+                    <option value="Morning (9AM - 12PM)">Morning (9AM - 12PM)</option>
+                    <option value="Afternoon (12PM - 4PM)">Afternoon (12PM - 4PM)</option>
+                    <option value="Evening (4PM - 7PM)">Evening (4PM - 7PM)</option>
+                  </select>
+                  <Clock className="absolute left-3 top-3 h-5 w-5 text-gray-400 pointer-events-none" />
+                  <ChevronDown className="absolute right-3 top-3 h-5 w-5 text-gray-400 pointer-events-none" />
+                </div>
+              </div>
+            </div>
+
+            {/* Map Location Picker */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Pickup Location</label>
+              <p className="text-xs text-gray-500 mb-3">Drag the map and click to pinpoint your exact pickup location.</p>
+              <div className="h-64 w-full rounded-2xl overflow-hidden border border-gray-200 shadow-sm relative z-0">
+                <MapContainer 
+                  center={location} 
+                  zoom={13} 
+                  scrollWheelZoom={false} 
+                  className="w-full h-full"
+                >
+                  <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  />
+                  <LocationMarker />
+                </MapContainer>
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-gray-100">
+              <button
+                type="submit"
+                disabled={isSubmitting || !selectedNgo || !category || (category==='Other' && !customCategory) || !dateSlot || !timeSlot}
+                className="w-full bg-brand-600 hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-3.5 rounded-xl transition-all shadow-lg shadow-brand-500/30 active:scale-[0.98]"
+              >
+                {isSubmitting ? 'Scheduling...' : 'Schedule Donation'}
+              </button>
+            </div>
+          </form>
+        </>
+      )}
 
       {/* Donator History */}
       <div className="mt-12 pt-8 border-t border-gray-200">
-        <h3 className="text-xl font-bold text-gray-900 mb-6">My Past Donations</h3>
+        <h3 className="text-xl font-bold text-gray-900 mb-6">Donated Items to NGOs</h3>
         {donations.filter(d => d.donatorId === currentUser.id).length === 0 ? (
           <div className="text-center text-gray-500 py-8 bg-white/50 rounded-xl border border-gray-100">
             You haven't made any donations yet.
@@ -363,10 +363,10 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations }) {
                     </p>
                   </div>
                   <div className="text-right">
-                    {donation.status === 'approved' ? (
+                    {donation.status === 'verified' ? (
                       <span className="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-md bg-green-50 text-green-700 text-xs font-semibold border border-green-100">
                         <CheckCircle2 className="w-3 h-3" />
-                        Approved
+                        Verified
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-md bg-yellow-50 text-yellow-700 text-xs font-semibold border border-yellow-100">
@@ -385,7 +385,7 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations }) {
   );
 }
 
-function ReceiverDashboard({ donations, currentUser, updateDonationStatus }) {
+function ReceiverDashboard({ donations, currentUser, updateDonationStatus, users }) {
   // Filter donations meant for this NGO
   const myDonations = donations.filter(d => d.ngoId === currentUser.id);
 
@@ -404,7 +404,9 @@ function ReceiverDashboard({ donations, currentUser, updateDonationStatus }) {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {myDonations.map((donation) => (
+          {myDonations.map((donation) => {
+            const donator = users?.find(u => u.id === donation.donatorId);
+            return (
             <div key={donation.id} className="glass rounded-2xl overflow-hidden flex flex-col transition-all hover:shadow-2xl hover:-translate-y-1">
               {donation.image ? (
                 <div className="w-full h-48 bg-gray-100 relative">
@@ -431,11 +433,20 @@ function ReceiverDashboard({ donations, currentUser, updateDonationStatus }) {
                       <p className="text-xs text-gray-500">{donation.timeSlot}</p>
                     </div>
                   </div>
+
+                  <div className="flex items-start gap-2 pt-2 border-t border-gray-100">
+                    <User className="w-5 h-5 text-gray-400 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">{donator ? donator.name : 'Unknown Donator'}</p>
+                      <p className="text-xs text-gray-500">Contact: {donator ? donator.credential : 'No info'}</p>
+                    </div>
+                  </div>
+
                   <div className="pt-3 border-t border-gray-100 flex items-center justify-between">
-                    {donation.status === 'approved' ? (
+                    {donation.status === 'verified' ? (
                       <span className="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-md bg-green-50 text-green-700 text-xs font-semibold border border-green-100">
                         <CheckCircle2 className="w-3 h-3" />
-                        Acknowledged
+                        Verified
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-md bg-yellow-50 text-yellow-700 text-xs font-semibold border border-yellow-100">
@@ -456,19 +467,20 @@ function ReceiverDashboard({ donations, currentUser, updateDonationStatus }) {
                   </div>
                 </div>
                 <button 
-                  onClick={() => updateDonationStatus(donation.id, 'approved')}
-                  disabled={donation.status === 'approved'}
+                  onClick={() => updateDonationStatus(donation.id, 'verified')}
+                  disabled={donation.status === 'verified'}
                   className={`mt-5 w-full py-2 font-medium rounded-lg transition-colors text-sm ${
-                    donation.status === 'approved' 
+                    donation.status === 'verified' 
                       ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                       : 'bg-brand-50 text-brand-700 hover:bg-brand-100'
                   }`}
                 >
-                  {donation.status === 'approved' ? 'Receipt Acknowledged' : 'Acknowledge Receipt'}
+                  {donation.status === 'verified' ? 'Verified' : 'Verify'}
                 </button>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

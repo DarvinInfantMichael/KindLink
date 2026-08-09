@@ -18,13 +18,19 @@ export const AuthProvider = ({ children }) => {
     return savedUsers ? JSON.parse(savedUsers) : [];
   });
 
-  const [ngos, setNgos] = useState([
-    { id: 'ngo-1', name: 'Food Rescue Foundation', category: 'Food', credential: '1111111111' },
-    { id: 'ngo-2', name: 'Books for All', category: 'Books', credential: '2222222222' },
-    { id: 'ngo-3', name: 'Hope Furniture Bank', category: 'Furniture', credential: '3333333333' },
-    { id: 'ngo-4', name: 'Warm Clothing Drive', category: 'Clothes', credential: '4444444444' },
-    { id: 'ngo-5', name: 'Global Relief Fund', category: 'Other', credential: '5555555555' },
-  ]);
+  const [ngos, setNgos] = useState(() => {
+    const savedNgos = localStorage.getItem('kindlink_ngos');
+    if (savedNgos) {
+      return JSON.parse(savedNgos);
+    }
+    return [
+      { id: 'ngo-1', name: 'Food Rescue Foundation', category: 'Food', credential: '1111111111', rating: 5.0 },
+      { id: 'ngo-2', name: 'Books for All', category: 'Books', credential: '2222222222', rating: 5.0 },
+      { id: 'ngo-3', name: 'Hope Furniture Bank', category: 'Furniture', credential: '3333333333', rating: 4.8 },
+      { id: 'ngo-4', name: 'Warm Clothing Drive', category: 'Clothes', credential: '4444444444', rating: 4.9 },
+      { id: 'ngo-5', name: 'Global Relief Fund', category: 'Other', credential: '5555555555', rating: 4.5 },
+    ];
+  });
 
   useEffect(() => {
     if (user) {
@@ -46,6 +52,17 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('kindlink_all_users', JSON.stringify(users));
   }, [users]);
 
+  // Listen for cross-tab updates for donations
+  useEffect(() => {
+    const handleStorage = (e) => {
+      if (e.key === 'kindlink_donations') {
+        setDonations(e.newValue ? JSON.parse(e.newValue) : []);
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
+
   const login = (userData) => {
     setUser(userData);
   };
@@ -65,7 +82,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const registerNgo = (ngoData) => {
-    setNgos((prev) => [...prev, { ...ngoData, id: Date.now().toString() }]);
+    setNgos((prev) => [...prev, { ...ngoData, id: Date.now().toString(), rating: 5.0 }]);
   };
 
   const registerUser = (userData) => {

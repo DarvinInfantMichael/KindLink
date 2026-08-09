@@ -1,37 +1,50 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Heart, Building2, Phone, KeyRound, ArrowRight } from 'lucide-react';
+import { Heart, Building2, Phone, KeyRound, ArrowRight, User } from 'lucide-react';
 
 export default function Login() {
   const [step, setStep] = useState(1); // 1: Role & Credential, 2: OTP
   const [role, setRole] = useState('donator');
+  const [name, setName] = useState('');
   const [credential, setCredential] = useState('');
   const [otp, setOtp] = useState('');
   const [generatedOtp, setGeneratedOtp] = useState('');
   const [error, setError] = useState('');
   
   const navigate = useNavigate();
-  const { login, ngos, users } = useAuth();
+  const { login, ngos, users, registerUser } = useAuth();
 
   const handleSendOtp = (e) => {
     e.preventDefault();
-    if (!credential) {
-      setError('Please enter your email or phone number.');
+    if (!name || !credential) {
+      setError('Please enter your name and email or phone number.');
       return;
     }
 
     // Validate user existence
     if (role === 'receiver') {
-      const exists = ngos.some(n => n.credential === credential);
-      if (!exists) {
+      const existingNgo = ngos.find(n => n.credential === credential);
+      if (!existingNgo) {
         setError('Organization not found. Please register first.');
         return;
       }
+      if (existingNgo.name.toLowerCase().trim() !== name.toLowerCase().trim()) {
+        setError('Organization name does not match our records.');
+        return;
+      }
     } else {
-      const exists = users.some(u => u.credential === credential);
-      if (!exists) {
-        setError('User not found. Please register first.');
+      const existingUser = users.find(u => u.credential === credential);
+      if (!existingUser) {
+        // Auto-register donator for seamless login
+        registerUser({
+          id: Date.now().toString(),
+          name: name.trim(),
+          credential: credential.trim(),
+          role: 'donator'
+        });
+      } else if (existingUser.name.toLowerCase().trim() !== name.toLowerCase().trim()) {
+        setError('User name does not match our records.');
         return;
       }
     }
@@ -71,7 +84,7 @@ export default function Login() {
     }
     
     login(userToLogin);
-    navigate('/');
+    navigate('/dashboard');
   };
 
   return (
@@ -121,6 +134,25 @@ export default function Login() {
             </div>
 
             <form onSubmit={handleSendOtp} className="space-y-5">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {role === 'donator' ? 'Full Name' : 'Organization Name'}
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    {role === 'donator' ? <User className="h-5 w-5 text-gray-400" /> : <Building2 className="h-5 w-5 text-gray-400" />}
+                  </div>
+                  <input
+                    type="text"
+                    required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="pl-10 w-full rounded-xl border-gray-200 bg-white/50 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all py-2.5 shadow-sm border"
+                    placeholder={role === 'donator' ? 'John Doe' : 'Hope Foundation'}
+                  />
+                </div>
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number or Email</label>
                 <div className="relative">

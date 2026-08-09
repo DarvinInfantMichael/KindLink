@@ -8,10 +8,24 @@ export default function Register() {
   const [name, setName] = useState('');
   const [credential, setCredential] = useState('');
   const navigate = useNavigate();
-  const { login, registerNgo, registerUser } = useAuth();
+  const { login, registerNgo, registerUser, ngos, users } = useAuth();
 
   const handleRegister = (e) => {
     e.preventDefault();
+
+    // Check if user/NGO already exists with this credential
+    if (role === 'receiver') {
+      if (ngos.some(n => n.credential === credential)) {
+        alert('An organization with this credential already exists. Please login instead.');
+        return;
+      }
+    } else {
+      if (users.some(u => u.credential === credential)) {
+        alert('A user with this credential already exists. Please login instead.');
+        return;
+      }
+    }
+
     const newUser = {
       id: Date.now().toString(),
       name,
@@ -33,7 +47,7 @@ export default function Register() {
 
     // Auto-login after registration
     login(newUser);
-    navigate('/');
+    navigate('/dashboard');
   };
 
   return (
