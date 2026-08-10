@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Heart, Building2, Phone, KeyRound, ArrowRight, User } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import PageTransition from '../components/PageTransition';
+import ThemeToggle from '../components/ThemeToggle';
 
 export default function Login() {
   const [step, setStep] = useState(1); // 1: Role & Credential, 2: OTP
@@ -88,143 +91,185 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-brand-50 to-white">
-      <div className="glass max-w-md w-full rounded-2xl p-8 relative overflow-hidden transition-all duration-300">
-        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-brand-400 to-brand-600"></div>
+    <PageTransition className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-brand-50 to-white dark:from-gray-950 dark:to-gray-900 transition-colors duration-300">
+      <div className="absolute top-4 right-4 z-50">
+        <ThemeToggle />
+      </div>
+      <motion.div 
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.3 }}
+        className="glass max-w-md w-full rounded-2xl p-8 relative overflow-hidden shadow-2xl dark:shadow-none border border-white/20 dark:border-gray-800"
+      >
+        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-brand-400 to-brand-600 dark:from-brand-500 dark:to-brand-700"></div>
         
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
-          <p className="text-gray-500">Sign in to your KindLink account</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Welcome Back</h1>
+          <p className="text-gray-500 dark:text-gray-400">Sign in to your KindLink account</p>
         </div>
 
-        {error && (
-          <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-xl text-sm border border-red-100">
-            {error}
-          </div>
-        )}
+        <AnimatePresence>
+          {error && (
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="mb-4 p-3 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 rounded-xl text-sm border border-red-100 dark:border-red-500/20"
+            >
+              {error}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {step === 1 ? (
-          <div className="animate-fade-in">
-            <div className="flex gap-4 mb-8">
-              <button
-                type="button"
-                onClick={() => setRole('donator')}
-                className={`flex-1 py-3 px-4 rounded-xl border-2 flex flex-col items-center gap-2 transition-all duration-200 ${
-                  role === 'donator' 
-                    ? 'border-brand-500 bg-brand-50 text-brand-700 shadow-sm' 
-                    : 'border-gray-200 hover:border-brand-200 text-gray-500'
-                }`}
-              >
-                <Heart className={role === 'donator' ? 'text-brand-500' : 'text-gray-400'} />
-                <span className="font-medium">Donator</span>
-              </button>
-              
-              <button
-                type="button"
-                onClick={() => setRole('receiver')}
-                className={`flex-1 py-3 px-4 rounded-xl border-2 flex flex-col items-center gap-2 transition-all duration-200 ${
-                  role === 'receiver' 
-                    ? 'border-brand-500 bg-brand-50 text-brand-700 shadow-sm' 
-                    : 'border-gray-200 hover:border-brand-200 text-gray-500'
-                }`}
-              >
-                <Building2 className={role === 'receiver' ? 'text-brand-500' : 'text-gray-400'} />
-                <span className="font-medium">NGO</span>
-              </button>
-            </div>
+        <AnimatePresence mode="wait">
+          {step === 1 ? (
+            <motion.div 
+              key="step1"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="flex gap-4 mb-8">
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  type="button"
+                  onClick={() => setRole('donator')}
+                  className={`flex-1 py-3 px-4 rounded-xl border-2 flex flex-col items-center gap-2 transition-all duration-200 ${
+                    role === 'donator' 
+                      ? 'border-brand-500 bg-brand-50 text-brand-700 dark:bg-brand-500/20 dark:text-brand-400' 
+                      : 'border-gray-200 hover:border-brand-200 text-gray-500 dark:border-gray-700 dark:hover:border-brand-500/50 dark:text-gray-400'
+                  }`}
+                >
+                  <Heart className={role === 'donator' ? 'text-brand-500' : 'text-gray-400'} />
+                  <span className="font-medium">Donator</span>
+                </motion.button>
+                
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  type="button"
+                  onClick={() => setRole('receiver')}
+                  className={`flex-1 py-3 px-4 rounded-xl border-2 flex flex-col items-center gap-2 transition-all duration-200 ${
+                    role === 'receiver' 
+                      ? 'border-brand-500 bg-brand-50 text-brand-700 dark:bg-brand-500/20 dark:text-brand-400' 
+                      : 'border-gray-200 hover:border-brand-200 text-gray-500 dark:border-gray-700 dark:hover:border-brand-500/50 dark:text-gray-400'
+                  }`}
+                >
+                  <Building2 className={role === 'receiver' ? 'text-brand-500' : 'text-gray-400'} />
+                  <span className="font-medium">NGO</span>
+                </motion.button>
+              </div>
 
-            <form onSubmit={handleSendOtp} className="space-y-5">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {role === 'donator' ? 'Full Name' : 'Organization Name'}
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    {role === 'donator' ? <User className="h-5 w-5 text-gray-400" /> : <Building2 className="h-5 w-5 text-gray-400" />}
+              <form onSubmit={handleSendOtp} className="space-y-5">
+                <motion.div whileFocus={{ scale: 1.01 }}>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    {role === 'donator' ? 'Full Name' : 'Organization Name'}
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      {role === 'donator' ? <User className="h-5 w-5 text-gray-400" /> : <Building2 className="h-5 w-5 text-gray-400" />}
+                    </div>
+                    <input
+                      type="text"
+                      required
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="pl-10 w-full rounded-xl border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all py-2.5 shadow-sm border outline-none"
+                      placeholder={role === 'donator' ? 'John Doe' : 'Hope Foundation'}
+                    />
                   </div>
+                </motion.div>
+
+                <motion.div whileFocus={{ scale: 1.01 }}>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone Number or Email</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Phone className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                      type="text"
+                      required
+                      value={credential}
+                      onChange={(e) => setCredential(e.target.value)}
+                      className="pl-10 w-full rounded-xl border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all py-2.5 shadow-sm border outline-none"
+                      placeholder="+1 234 567 8900"
+                    />
+                  </div>
+                </motion.div>
+
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  type="submit"
+                  className="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium py-3 rounded-xl transition-colors shadow-lg shadow-brand-500/30 flex items-center justify-center gap-2"
+                >
+                  Send OTP <ArrowRight className="w-5 h-5" />
+                </motion.button>
+              </form>
+            </motion.div>
+          ) : (
+            <motion.div 
+              key="step2"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="mb-6 text-center">
+                <motion.div 
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                  className="w-16 h-16 bg-brand-100 dark:bg-brand-500/20 rounded-full flex items-center justify-center mx-auto mb-4"
+                >
+                  <KeyRound className="w-8 h-8 text-brand-600 dark:text-brand-400" />
+                </motion.div>
+                <p className="text-gray-600 dark:text-gray-400">Enter the 6-digit code sent to<br/><span className="font-medium text-gray-900 dark:text-white">{credential}</span></p>
+              </div>
+
+              <form onSubmit={handleVerifyOtp} className="space-y-5">
+                <motion.div whileFocus={{ scale: 1.01 }}>
                   <input
                     type="text"
                     required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="pl-10 w-full rounded-xl border-gray-200 bg-white/50 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all py-2.5 shadow-sm border"
-                    placeholder={role === 'donator' ? 'John Doe' : 'Hope Foundation'}
+                    maxLength={6}
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+                    className="w-full text-center tracking-[0.5em] text-2xl font-bold rounded-xl border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all py-4 shadow-sm border outline-none"
+                    placeholder="------"
                   />
-                </div>
-              </div>
+                </motion.div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number or Email</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Phone className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <input
-                    type="text"
-                    required
-                    value={credential}
-                    onChange={(e) => setCredential(e.target.value)}
-                    className="pl-10 w-full rounded-xl border-gray-200 bg-white/50 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all py-2.5 shadow-sm border"
-                    placeholder="+1 234 567 8900"
-                  />
-                </div>
-              </div>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  type="submit"
+                  className="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium py-3 rounded-xl transition-colors shadow-lg shadow-brand-500/30"
+                >
+                  Verify & Login
+                </motion.button>
+                
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  type="button"
+                  onClick={() => setStep(1)}
+                  className="w-full text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 font-medium py-2 text-sm"
+                >
+                  Back to edit details
+                </motion.button>
+              </form>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-              <button
-                type="submit"
-                className="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium py-3 rounded-xl transition-colors shadow-lg shadow-brand-500/30 flex items-center justify-center gap-2"
-              >
-                Send OTP <ArrowRight className="w-5 h-5" />
-              </button>
-            </form>
-          </div>
-        ) : (
-          <div className="animate-slide-up">
-            <div className="mb-6 text-center">
-              <div className="w-16 h-16 bg-brand-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <KeyRound className="w-8 h-8 text-brand-600" />
-              </div>
-              <p className="text-gray-600">Enter the 6-digit code sent to<br/><span className="font-medium text-gray-900">{credential}</span></p>
-            </div>
-
-            <form onSubmit={handleVerifyOtp} className="space-y-5">
-              <div>
-                <input
-                  type="text"
-                  required
-                  maxLength={6}
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                  className="w-full text-center tracking-[0.5em] text-2xl font-bold rounded-xl border-gray-200 bg-white/50 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all py-4 shadow-sm border"
-                  placeholder="------"
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium py-3 rounded-xl transition-colors shadow-lg shadow-brand-500/30"
-              >
-                Verify & Login
-              </button>
-              
-              <button
-                type="button"
-                onClick={() => setStep(1)}
-                className="w-full text-gray-500 hover:text-gray-700 font-medium py-2 text-sm"
-              >
-                Back to edit details
-              </button>
-            </form>
-          </div>
-        )}
-
-        <div className="mt-8 text-center text-sm text-gray-500">
+        <div className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
           New to KindLink?{' '}
-          <Link to="/register" className="text-brand-600 hover:text-brand-700 font-medium">
+          <Link to="/register" className="text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 font-medium">
             Create an account
           </Link>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </PageTransition>
   );
 }
