@@ -7,10 +7,10 @@ import ThemeToggle from '../components/ThemeToggle';
 
 export default function Landing() {
   const verifiedNgos = [
-    { name: "Food Rescue Foundation", category: "Food", rating: 5, reviews: 124, impact: "10,000+ meals served" },
-    { name: "Books for All", category: "Education", rating: 5, reviews: 89, impact: "5,000+ books donated" },
-    { name: "Hope Furniture Bank", category: "Shelter", rating: 4.8, reviews: 210, impact: "2,000+ homes furnished" },
-    { name: "Warm Clothing Drive", category: "Clothing", rating: 4.9, reviews: 156, impact: "15,000+ clothes distributed" },
+    { name: "Food Rescue Foundation", category: "Food", rating: 5, reviews: 124, impact: "10,000+ meals served", image: "/images/ngo1.png" },
+    { name: "Books for All", category: "Education", rating: 5, reviews: 89, impact: "5,000+ books donated", image: "/images/ngo2.png" },
+    { name: "Hope Furniture Bank", category: "Shelter", rating: 4.8, reviews: 210, impact: "2,000+ homes furnished", image: "/images/ngo3.png" },
+    { name: "Warm Clothing Drive", category: "Clothing", rating: 4.9, reviews: 156, impact: "15,000+ clothes distributed", image: "/images/ngo4.png" },
   ];
 
   const roadmap = [
@@ -183,27 +183,32 @@ export default function Landing() {
                 key={idx} 
                 variants={fadeInUp}
                 whileHover={{ y: -10, boxShadow: "0 25px 50px -12px rgba(34, 197, 94, 0.1)" }}
-                className="bg-white dark:bg-gray-800 rounded-3xl p-6 border border-gray-100 dark:border-gray-700 transition-all duration-300 group cursor-default relative overflow-hidden shadow-sm dark:shadow-none"
+                className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 transition-all duration-300 group cursor-default relative overflow-hidden shadow-sm dark:shadow-none flex flex-col"
               >
-                <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Award className="w-8 h-8 text-brand-100 dark:text-brand-500/20" />
+                <div className="h-40 w-full overflow-hidden relative">
+                  <img src={ngo.image} alt={ngo.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-gray-900/60 to-transparent" />
+                  <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Award className="w-6 h-6 text-yellow-400 drop-shadow-md" />
+                  </div>
+                  <div className="absolute bottom-3 left-4">
+                    <span className="px-2.5 py-1 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md text-brand-600 dark:text-brand-400 text-xs font-bold rounded-lg shadow-sm">
+                      {ngo.category}
+                    </span>
+                  </div>
                 </div>
-                <div className="w-14 h-14 bg-brand-50 dark:bg-brand-500/10 rounded-2xl flex items-center justify-center mb-6 text-brand-600 dark:text-brand-400">
-                  <Building2 className="w-7 h-7" />
-                </div>
-                <div className="inline-block px-3 py-1 bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-300 text-xs font-bold rounded-lg mb-4">
-                  {ngo.category}
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 leading-tight">{ngo.name}</h3>
-                <div className="flex items-center gap-1 mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className={`w-4 h-4 ${i < Math.floor(ngo.rating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300 dark:text-gray-600'}`} />
-                  ))}
-                  <span className="text-sm font-bold text-gray-900 dark:text-white ml-1">{ngo.rating}</span>
-                  <span className="text-sm text-gray-400">({ngo.reviews})</span>
-                </div>
-                <div className="pt-4 border-t border-gray-50 dark:border-gray-700">
-                  <p className="text-sm font-medium text-brand-600 dark:text-brand-400">{ngo.impact}</p>
+                <div className="p-6 flex-1 flex flex-col">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 leading-tight">{ngo.name}</h3>
+                  <div className="flex items-center gap-1 mb-4">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className={`w-4 h-4 ${i < Math.floor(ngo.rating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300 dark:text-gray-600'}`} />
+                    ))}
+                    <span className="text-sm font-bold text-gray-900 dark:text-white ml-1">{ngo.rating}</span>
+                    <span className="text-sm text-gray-400">({ngo.reviews})</span>
+                  </div>
+                  <div className="pt-4 mt-auto border-t border-gray-50 dark:border-gray-700">
+                    <p className="text-sm font-medium text-brand-600 dark:text-brand-400">{ngo.impact}</p>
+                  </div>
                 </div>
               </motion.div>
             ))}
