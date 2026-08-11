@@ -106,7 +106,7 @@ export default function Login() {
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.3 }}
-        className="glass max-w-md w-full rounded-2xl p-8 relative overflow-hidden shadow-2xl dark:shadow-none border border-white/20 dark:border-gray-800"
+        className="glass max-w-md w-full rounded-2xl p-6 sm:p-8 relative overflow-hidden shadow-2xl dark:shadow-none border border-white/20 dark:border-gray-800"
       >
         <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-brand-400 to-brand-600 dark:from-brand-500 dark:to-brand-700"></div>
         

@@ -45,7 +45,7 @@ export default function HelpingDay() {
             Sign up today to be part of the largest synchronized charity event of the year.
           </p>
 
-          <div className="grid grid-cols-3 gap-4 mb-8 max-w-md">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8 max-w-md">
             {stats.map((stat, i) => (
               <div key={i} className="flex flex-col">
                 <div className="text-brand-400 mb-2">{stat.icon}</div>

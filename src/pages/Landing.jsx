@@ -36,7 +36,7 @@ export default function Landing() {
   return (
     <PageTransition className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col font-sans selection:bg-brand-100 selection:text-brand-900 dark:selection:bg-brand-500/30 dark:selection:text-brand-100 transition-colors duration-300">
       {/* Navbar */}
-      <header className="bg-white/80 dark:bg-gray-950/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 sticky top-0 z-50 transition-all">
+      <header className="bg-gradient-to-r from-brand-50/80 via-white/80 to-teal-50/80 dark:from-brand-950/80 dark:via-gray-950/80 dark:to-teal-950/80 backdrop-blur-md border-b border-brand-100 dark:border-brand-900 sticky top-0 z-50 transition-all duration-300 hover:shadow-md hover:shadow-brand-500/10 hover:border-brand-300 dark:hover:border-brand-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 group cursor-pointer">
             <motion.div 
@@ -47,11 +47,11 @@ export default function Landing() {
             </motion.div>
             <span className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">KindLink</span>
           </Link>
-          <div className="flex items-center gap-4 sm:gap-6">
+          <div className="flex items-center gap-3 sm:gap-6">
             <ThemeToggle />
-            <Link to="/login" className="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Log in</Link>
+            <Link to="/login" className="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-brand-600 dark:hover:text-brand-400 transition-colors hidden sm:block">Log in</Link>
             <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.95 }}>
-              <Link to="/register" className="text-sm font-bold bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-brand-600 dark:hover:bg-brand-500 dark:hover:text-white px-6 py-2.5 rounded-full shadow-lg hover:shadow-brand-500/30 transition-all">Sign up</Link>
+              <Link to="/register" className="text-xs sm:text-sm font-bold bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-brand-600 dark:hover:bg-brand-500 dark:hover:text-white px-4 py-2 sm:px-6 sm:py-2.5 rounded-full shadow-lg hover:shadow-brand-500/30 transition-all">Sign up</Link>
             </motion.div>
           </div>
         </div>
