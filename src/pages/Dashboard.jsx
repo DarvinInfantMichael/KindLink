@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, ImagePlus, Calendar, Clock, HeartHandshake, CheckCircle2, ChevronDown, MapPin, User } from 'lucide-react';
+import { LogOut, ImagePlus, Calendar, Clock, HeartHandshake, CheckCircle2, ChevronDown, MapPin, User, Building2, Phone, TrendingUp, Quote, X, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import { motion, AnimatePresence } from 'framer-motion';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import PageTransition from '../components/PageTransition';
 import ThemeToggle from '../components/ThemeToggle';
 import RecentReviews from '../components/RecentReviews';
@@ -33,7 +34,7 @@ export default function Dashboard() {
   };
 
   return (
-    <PageTransition className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col transition-colors duration-300">
+    <PageTransition className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 dark:from-emerald-950/20 dark:to-gray-950 flex flex-col transition-colors duration-300">
       {/* Header */}
       <header className="bg-white/80 dark:bg-gray-950/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 sticky top-0 z-10 transition-colors duration-300">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -60,20 +61,145 @@ export default function Dashboard() {
         </div>
       </header>
 
-      <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
-        <AnimatePresence mode="wait">
-          {user?.role === 'donator' ? (
-            <DonatorDashboard key="donator" ngos={ngos} addDonation={addDonation} currentUser={user} donations={donations} />
-          ) : (
-            <ReceiverDashboard key="receiver" donations={donations} currentUser={user} updateDonationStatus={updateDonationStatus} users={users} />
-          )}
-        </AnimatePresence>
+      <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+        <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-2xl rounded-[2.5rem] shadow-2xl p-6 sm:p-10 border border-white/50 dark:border-gray-800/50 min-h-[80vh]">
+          <AnimatePresence mode="wait">
+            {user?.role === 'donator' ? (
+              <DonatorDashboard key="donator" ngos={ngos} addDonation={addDonation} currentUser={user} donations={donations} />
+            ) : (
+              <ReceiverDashboard key="receiver" donations={donations} currentUser={user} updateDonationStatus={updateDonationStatus} users={users} ngos={ngos} />
+            )}
+          </AnimatePresence>
+        </div>
       </main>
     </PageTransition>
   );
 }
 
+function UpcomingActivitiesView({ activities, title, subtitle, isNgo, onAdd, onDelete }) {
+  const [registered, setRegistered] = useState({});
+
+  const handleRegister = (activityId) => {
+    setRegistered(prev => ({
+      ...prev,
+      [activityId]: { status: 'registered', reminder: false }
+    }));
+  };
+
+  const handleSetReminder = (activityId) => {
+    setRegistered(prev => ({
+      ...prev,
+      [activityId]: { ...prev[activityId], reminder: true }
+    }));
+    alert('Reminder set for 1 day before the event!');
+  };
+
+  return (
+    <div className="pt-4">
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{title}</h2>
+          <p className="text-gray-500 dark:text-gray-400 text-sm">{subtitle}</p>
+        </div>
+        {isNgo && (
+          <button 
+            onClick={onAdd}
+            className="px-4 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl font-medium text-sm shadow-sm border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+          >
+            + New Activity
+          </button>
+        )}
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+         <AnimatePresence>
+           {activities.map(activity => (
+             <motion.div 
+               key={activity.id} 
+               initial={{ opacity: 0, scale: 0.95 }}
+               animate={{ opacity: 1, scale: 1 }}
+               exit={{ opacity: 0, scale: 0.95 }}
+               className="glass p-6 rounded-2xl border border-gray-100 dark:border-gray-800 hover:shadow-lg transition-all group cursor-pointer relative overflow-hidden flex flex-col"
+             >
+                <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/5 rounded-bl-full -mr-4 -mt-4 transition-transform duration-500 group-hover:scale-110 pointer-events-none"></div>
+                <div className="flex items-start justify-between mb-4 relative z-10">
+                  <div className="p-3 bg-brand-50 dark:bg-brand-500/20 text-brand-600 dark:text-brand-400 rounded-xl">
+                    <Calendar className="w-5 h-5" />
+                  </div>
+                  <div className="flex items-center gap-2 text-right">
+                    <span className="text-xs font-bold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-2.5 py-1 rounded-md">
+                      {activity.participants || 0} Registered
+                    </span>
+                    {isNgo && (
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); onDelete(activity.id); }}
+                        className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-md transition-colors opacity-0 group-hover:opacity-100"
+                        title="Delete Activity"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              <div className="relative z-10 flex-1 flex flex-col">
+                <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-1">{activity.title}</h3>
+                {!isNgo && <p className="text-sm font-medium text-brand-600 dark:text-brand-400 mb-1">{activity.ngoName}</p>}
+                <p className="text-sm text-brand-600 dark:text-brand-400 font-semibold mb-4 flex-1">
+                   {activity.date}
+                </p>
+                
+                <div className="space-y-2.5 text-sm text-gray-600 dark:text-gray-400 border-t border-gray-100 dark:border-gray-800 pt-4 mt-auto">
+                  <div className="flex items-center gap-2.5">
+                    <Clock className="w-4 h-4 text-gray-400" />
+                    <span>{activity.time || '10:00 AM - 2:00 PM'}</span>
+                  </div>
+                  <div className="flex items-center gap-2.5">
+                    <MapPin className="w-4 h-4 text-gray-400" />
+                    <span className="truncate">{activity.location}</span>
+                  </div>
+                </div>
+                
+                {!isNgo && (
+                  <div className="mt-5 flex flex-col gap-2 pt-5 border-t border-gray-100 dark:border-gray-800">
+                    {!registered[activity.id] ? (
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); handleRegister(activity.id); }}
+                        className="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-sm font-bold shadow-sm shadow-brand-500/20 transition-all active:scale-95"
+                      >
+                        Register Now
+                      </button>
+                    ) : (
+                      <div className="flex flex-col gap-2">
+                        <div className="w-full py-2 bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-500/20 rounded-xl text-sm font-bold flex items-center justify-center gap-1.5 cursor-default">
+                          <CheckCircle2 className="w-4 h-4" /> Registered
+                        </div>
+                        {!registered[activity.id].reminder && (
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); handleSetReminder(activity.id); }}
+                            className="w-full py-2 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:border-brand-300 dark:hover:border-brand-700 hover:text-brand-600 dark:hover:text-brand-400 rounded-xl text-xs font-medium transition-colors shadow-sm"
+                          >
+                            Set Reminder (1 Day Before)
+                          </button>
+                        )}
+                        {registered[activity.id].reminder && (
+                          <div className="text-xs text-center text-gray-500 dark:text-gray-400 mt-1 flex items-center justify-center gap-1">
+                            <Clock className="w-3 h-3" /> Reminder set for 1 day before
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+             </motion.div>
+           ))}
+         </AnimatePresence>
+      </div>
+    </div>
+  );
+}
+
 function DonatorDashboard({ ngos, addDonation, currentUser, donations }) {
+  const { ngoEvents } = useAuth();
   const [selectedNgo, setSelectedNgo] = useState('');
   const [category, setCategory] = useState('');
   const [customCategory, setCustomCategory] = useState('');
@@ -472,14 +598,90 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations }) {
       </div>
       </motion.div>
       
+      <div className="mt-8 border-t border-gray-200 dark:border-gray-800">
+        <UpcomingActivitiesView 
+          activities={ngoEvents}
+          title="Upcoming Activities"
+          subtitle="Explore events and drives organized by our partner NGOs."
+          isNgo={false}
+        />
+      </div>
+
       <NgoEvents />
       <HelpingDay />
     </div>
   );
 }
 
-function ReceiverDashboard({ donations, currentUser, updateDonationStatus, users }) {
+function ReceiverDashboard({ donations, currentUser, updateDonationStatus, users, ngos }) {
+  const { ngoEvents, addNgoEvent, deleteNgoEvent } = useAuth();
+  
   const myDonations = donations.filter(d => d.ngoId === currentUser.id);
+  const myNgoInfo = ngos?.find(n => n.id === currentUser.id);
+
+  // Derive today's donations
+  const todaysDonations = myDonations.filter(d => {
+    const today = new Date().toISOString().split('T')[0];
+    return d.dateSlot >= today; // simplified logic for demo, considering future or today slots as today/upcoming
+  });
+
+  const chartData = [
+    { name: 'Mon', donations: 4 },
+    { name: 'Tue', donations: 7 },
+    { name: 'Wed', donations: 5 },
+    { name: 'Thu', donations: 10 },
+    { name: 'Fri', donations: 8 },
+    { name: 'Sat', donations: 15 },
+    { name: 'Sun', donations: 12 },
+  ];
+
+  const helperQuotes = [
+    { text: "We make a living by what we get, but we make a life by what we give.", author: "Winston Churchill" },
+    { text: "No one has ever become poor by giving.", author: "Anne Frank" },
+    { text: "The meaning of life is to find your gift. The purpose of life is to give it away.", author: "Pablo Picasso" }
+  ];
+
+  const [quoteIndex, setQuoteIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setQuoteIndex(prev => (prev + 1) % helperQuotes.length);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const myUpcomingActivities = ngoEvents?.filter(e => e.ngoName === currentUser.name || e.ngoId === currentUser.id) || [];
+
+  const [showActivityModal, setShowActivityModal] = useState(false);
+  const [newActivity, setNewActivity] = useState({
+    title: '',
+    date: '',
+    time: '',
+    location: ''
+  });
+
+  const handleAddActivity = (e) => {
+    e.preventDefault();
+    if (newActivity.title && newActivity.date && newActivity.time && newActivity.location) {
+      addNgoEvent({
+        title: newActivity.title,
+        date: newActivity.date,
+        time: newActivity.time,
+        location: newActivity.location,
+        participants: 0,
+        ngoName: currentUser.name,
+        ngoId: currentUser.id,
+        description: `Join us for the ${newActivity.title} on ${newActivity.date}. We look forward to your support!`,
+        image: 'https://images.unsplash.com/photo-1593113514676-538b3f1a0e40?q=80&w=600&auto=format&fit=crop'
+      });
+      setNewActivity({ title: '', date: '', time: '', location: '' });
+      setShowActivityModal(false);
+    }
+  };
+
+  const handleDeleteActivity = (id) => {
+    deleteNgoEvent(id);
+  };
 
   const container = {
     hidden: { opacity: 0 },
@@ -499,121 +701,346 @@ function ReceiverDashboard({ donations, currentUser, updateDonationStatus, users
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="space-y-6"
+      className="space-y-8"
     >
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">Incoming Donations</h2>
-        <p className="text-gray-500 dark:text-gray-400 text-sm">Manage donations directed to your organization.</p>
+      {/* Attractive Message Section */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-brand-600 to-brand-800 p-8 sm:p-10 text-white shadow-xl shadow-brand-500/20 border border-brand-500/20">
+        <div className="absolute -top-10 -right-10 opacity-10 pointer-events-none">
+           <HeartHandshake className="w-64 h-64" />
+        </div>
+        <div className="relative z-10 max-w-2xl">
+          <span className="inline-block py-1 px-3 rounded-full bg-white/20 backdrop-blur-sm text-xs font-semibold tracking-wider mb-4 border border-white/20 uppercase">
+            KindLink Information
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4 tracking-tight">Together, we amplify kindness.</h2>
+          <p className="text-brand-100 text-lg leading-relaxed">
+            Your organization is at the heart of our mission. By connecting generous donors directly to your cause, we streamline the process of receiving essential resources, empowering you to focus on what matters most: helping those in need.
+          </p>
+        </div>
       </div>
 
-      {myDonations.length === 0 ? (
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="glass rounded-2xl p-12 text-center flex flex-col items-center justify-center text-gray-500 dark:text-gray-400"
-        >
-          <HeartHandshake className="w-16 h-16 text-gray-300 dark:text-gray-600 mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">No donations yet</h3>
-          <p className="max-w-sm">When generous people choose to donate to your organization, they will appear here.</p>
-        </motion.div>
-      ) : (
-        <motion.div 
-          variants={container}
-          initial="hidden"
-          animate="show"
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-        >
-          <AnimatePresence>
-            {myDonations.map((donation) => {
-              const donator = users?.find(u => u.id === donation.donatorId);
-              return (
-              <motion.div 
-                variants={item}
-                layout
-                key={donation.id} 
-                className="glass rounded-2xl overflow-hidden flex flex-col hover:shadow-2xl transition-shadow border-gray-100 dark:border-gray-800"
-              >
-                {donation.image ? (
-                  <div className="w-full h-48 bg-gray-100 dark:bg-gray-900 relative">
-                    <img src={donation.image} alt="Donation" className="w-full h-full object-cover" />
-                    <div className="absolute top-3 left-3 px-3 py-1 bg-white/90 dark:bg-gray-900/90 backdrop-blur text-sm font-semibold text-brand-700 dark:text-brand-400 rounded-full shadow-sm">
-                      {donation.category === 'Other' ? donation.customCategory : donation.category}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* NGO Info */}
+        <div className="glass rounded-2xl p-6 lg:col-span-1 border border-gray-200 dark:border-gray-800 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+          <div>
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-12 h-12 bg-brand-100 dark:bg-brand-500/20 rounded-xl flex items-center justify-center text-brand-600 dark:text-brand-400">
+                <Building2 className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">{myNgoInfo?.name || currentUser.name}</h3>
+                <p className="text-sm text-brand-600 dark:text-brand-400 font-medium">{myNgoInfo?.category || 'Registered NGO'}</p>
+              </div>
+            </div>
+            <div className="space-y-3 mt-4">
+              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                <MapPin className="w-4 h-4 text-gray-400" />
+                <span>{myNgoInfo?.address || 'Location on file'}</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                <Phone className="w-4 h-4 text-gray-400" />
+                <span>{myNgoInfo?.credential || currentUser.credential}</span>
+              </div>
+            </div>
+          </div>
+          <div className="mt-6 pt-5 border-t border-gray-100 dark:border-gray-800">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Community Rating</span>
+              <span className="font-bold text-gray-900 dark:text-white flex items-center gap-1 bg-brand-50 dark:bg-brand-500/20 px-2 py-1 rounded-md text-brand-700 dark:text-brand-400 text-sm">
+                ⭐ {myNgoInfo?.rating ? myNgoInfo.rating.toFixed(1) : '5.0'}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Stats & Chart */}
+        <div className="glass rounded-2xl p-6 lg:col-span-2 border border-gray-200 dark:border-gray-800 shadow-sm flex flex-col hover:shadow-md transition-shadow">
+          <div className="grid grid-cols-2 gap-4 mb-6">
+             <div className="bg-white/50 dark:bg-gray-900/50 p-4 rounded-xl border border-gray-100 dark:border-gray-800 flex flex-col justify-center">
+               <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Today's Active Donations</p>
+               <div className="flex items-end gap-2">
+                 <span className="text-4xl font-bold text-gray-900 dark:text-white tracking-tight">{todaysDonations.length}</span>
+                 <span className="text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-500/10 px-1.5 py-0.5 rounded font-medium flex items-center mb-1.5 border border-green-100 dark:border-green-500/20"><TrendingUp className="w-3 h-3 mr-1"/> Activity</span>
+               </div>
+             </div>
+             <div className="bg-white/50 dark:bg-gray-900/50 p-4 rounded-xl border border-gray-100 dark:border-gray-800 flex flex-col justify-center">
+               <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Total Received</p>
+               <div className="flex items-end gap-2">
+                 <span className="text-4xl font-bold text-gray-900 dark:text-white tracking-tight">{myDonations.length}</span>
+                 <span className="text-xs text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-500/10 px-1.5 py-0.5 rounded font-medium flex items-center mb-1.5 border border-brand-100 dark:border-brand-500/20">All time</span>
+               </div>
+             </div>
+          </div>
+          <div className="flex-1 w-full min-h-[160px]">
+             <ResponsiveContainer width="100%" height="100%">
+               <BarChart data={chartData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#8884d8" opacity={0.15} />
+                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#9ca3af', fontSize: 12, fontWeight: 500}} dy={10} />
+                 <YAxis axisLine={false} tickLine={false} tick={{fill: '#9ca3af', fontSize: 12, fontWeight: 500}} />
+                 <Tooltip 
+                   cursor={{fill: 'rgba(14, 165, 233, 0.05)'}} 
+                   contentStyle={{borderRadius: '12px', border: '1px solid rgba(229, 231, 235, 0.5)', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}} 
+                   itemStyle={{color: '#0ea5e9', fontWeight: 'bold'}}
+                 />
+                 <Bar dataKey="donations" fill="#0ea5e9" radius={[6, 6, 0, 0]} barSize={40} />
+               </BarChart>
+             </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
+      {/* Helper Quotes */}
+      <div className="relative overflow-hidden rounded-3xl p-8 sm:p-10 text-center shadow-xl border border-green-500/20 bg-gradient-to-r from-green-500 to-emerald-700 text-white shadow-green-500/20">
+         <div className="absolute -top-10 -left-10 opacity-10 pointer-events-none">
+           <Quote className="w-64 h-64" />
+         </div>
+         <div className="h-24 flex flex-col items-center justify-center relative z-10 mt-2">
+           <AnimatePresence mode="wait">
+             <motion.div
+               key={quoteIndex}
+               initial={{ opacity: 0, scale: 0.95 }}
+               animate={{ opacity: 1, scale: 1 }}
+               exit={{ opacity: 0, scale: 0.95 }}
+               transition={{ duration: 0.5 }}
+               className="max-w-2xl"
+             >
+               <p className="text-xl sm:text-2xl font-medium leading-tight">"{helperQuotes[quoteIndex].text}"</p>
+               <p className="text-sm text-green-100 mt-4 font-bold tracking-wide uppercase">— {helperQuotes[quoteIndex].author}</p>
+             </motion.div>
+           </AnimatePresence>
+         </div>
+      </div>
+
+      {/* Upcoming Activities (NEW) */}
+      <UpcomingActivitiesView 
+        activities={myUpcomingActivities}
+        title="Your Upcoming Activities"
+        subtitle="Events and drives organized by your NGO."
+        isNgo={true}
+        onAdd={() => setShowActivityModal(true)}
+        onDelete={handleDeleteActivity}
+      />
+
+      {/* Incoming Donations */}
+      <div className="pt-4">
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">Incoming Donations</h2>
+            <p className="text-gray-500 dark:text-gray-400 text-sm">Manage resources directed to your organization.</p>
+          </div>
+        </div>
+
+        {myDonations.length === 0 ? (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="glass rounded-2xl p-12 text-center flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 border-dashed border-2 border-gray-200 dark:border-gray-800"
+          >
+            <div className="w-20 h-20 bg-gray-50 dark:bg-gray-900 rounded-full flex items-center justify-center mb-5 shadow-inner">
+              <HeartHandshake className="w-10 h-10 text-brand-400 dark:text-brand-600" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Awaiting Donations</h3>
+            <p className="max-w-md text-gray-500 dark:text-gray-400">When generous individuals schedule a donation to your organization, the details will seamlessly appear right here.</p>
+          </motion.div>
+        ) : (
+          <motion.div 
+            variants={container}
+            initial="hidden"
+            animate="show"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
+            <AnimatePresence>
+              {myDonations.map((donation) => {
+                const donator = users?.find(u => u.id === donation.donatorId);
+                return (
+                <motion.div 
+                  variants={item}
+                  layout
+                  key={donation.id} 
+                  className="glass rounded-2xl overflow-hidden flex flex-col hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-800 group"
+                >
+                  {donation.image ? (
+                    <div className="w-full h-48 bg-gray-100 dark:bg-gray-900 relative overflow-hidden">
+                      <img src={donation.image} alt="Donation" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <div className="absolute top-3 left-3 px-3 py-1.5 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md text-xs font-bold text-brand-700 dark:text-brand-400 rounded-lg shadow-sm border border-white/20 dark:border-gray-800/50">
+                        {donation.category === 'Other' ? donation.customCategory : donation.category}
+                      </div>
                     </div>
-                  </div>
-                ) : (
-                  <div className="w-full h-48 bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
-                    <div className="text-center text-gray-400 dark:text-gray-600">
-                      <ImagePlus className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                      <span className="text-sm font-medium">No image provided</span>
+                  ) : (
+                    <div className="w-full h-48 bg-gray-50 dark:bg-gray-900 flex flex-col items-center justify-center border-b border-gray-100 dark:border-gray-800">
+                      <ImagePlus className="w-10 h-10 mb-3 text-gray-300 dark:text-gray-700" />
+                      <span className="text-sm font-medium text-gray-400 dark:text-gray-600">No image attached</span>
                     </div>
+                  )}
+                  
+                  <div className="p-5 flex-1 flex flex-col">
+                    <div className="flex-1 space-y-4">
+                      <div className="flex items-start gap-3">
+                        <div className="mt-0.5 bg-blue-50 dark:bg-blue-500/10 p-1.5 rounded-md text-blue-600 dark:text-blue-400">
+                           <Calendar className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                            {new Date(donation.dateSlot).toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mt-0.5">{donation.timeSlot}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-3">
+                        <div className="mt-0.5 bg-purple-50 dark:bg-purple-500/10 p-1.5 rounded-md text-purple-600 dark:text-purple-400">
+                           <User className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-gray-900 dark:text-white">{donator ? donator.name : 'Generous Donor'}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{donator ? donator.credential : 'Contact not available'}</p>
+                        </div>
+                      </div>
+
+                      <div className="pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                        {donation.status === 'verified' ? (
+                          <span className="inline-flex items-center gap-1.5 py-1.5 px-3 rounded-lg bg-green-50 text-green-700 border border-green-200 dark:bg-green-500/10 dark:text-green-400 dark:border-green-500/20 text-xs font-bold shadow-sm">
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            Verified
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1.5 py-1.5 px-3 rounded-lg bg-yellow-50 text-yellow-700 border border-yellow-200 dark:bg-yellow-500/10 dark:text-yellow-400 dark:border-yellow-500/20 text-xs font-bold shadow-sm">
+                            <motion.span 
+                              animate={{ opacity: [1, 0.5, 1] }} 
+                              transition={{ repeat: Infinity, duration: 1.5 }}
+                              className="w-1.5 h-1.5 rounded-full bg-yellow-500 dark:bg-yellow-400"
+                            />
+                            Pending
+                          </span>
+                        )}
+                        {donation.location && (
+                          <a 
+                            href={`https://www.google.com/maps?q=${donation.location.lat},${donation.location.lng}`} 
+                            target="_blank" 
+                            rel="noreferrer"
+                            className="text-xs font-semibold text-brand-600 dark:text-brand-400 hover:text-brand-700 flex items-center gap-1 bg-brand-50 dark:bg-brand-500/10 px-2.5 py-1.5 rounded-lg transition-colors border border-brand-100 dark:border-brand-500/20 hover:bg-brand-100 dark:hover:bg-brand-500/20 shadow-sm"
+                          >
+                            <MapPin className="w-3.5 h-3.5" /> Location
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                    <motion.button 
+                      whileTap={{ scale: donation.status === 'verified' ? 1 : 0.97 }}
+                      onClick={() => updateDonationStatus(donation.id, 'verified')}
+                      disabled={donation.status === 'verified'}
+                      className={`mt-5 w-full py-2.5 font-bold rounded-xl transition-all text-sm shadow-sm ${
+                        donation.status === 'verified' 
+                          ? 'bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-500 cursor-not-allowed border border-gray-200 dark:border-gray-700'
+                          : 'bg-brand-600 text-white hover:bg-brand-700 hover:shadow-brand-500/30 hover:shadow-lg'
+                      }`}
+                    >
+                      {donation.status === 'verified' ? 'Verified Successfully' : 'Verify Reception'}
+                    </motion.button>
                   </div>
-                )}
+                </motion.div>
+                );
+              })}
+            </AnimatePresence>
+          </motion.div>
+        )}
+      </div>
+
+      {/* New Activity Modal */}
+      <AnimatePresence>
+        {showActivityModal && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          >
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl border border-gray-100 dark:border-gray-800"
+            >
+              <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">Create New Activity</h3>
+                <button 
+                  onClick={() => setShowActivityModal(false)}
+                  className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              
+              <form onSubmit={handleAddActivity} className="p-6 space-y-5">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Event Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={newActivity.title}
+                    onChange={(e) => setNewActivity({...newActivity, title: e.target.value})}
+                    placeholder="e.g., Blood Donation Camp"
+                    className="w-full px-4 py-2.5 rounded-xl border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all shadow-sm border"
+                  />
+                </div>
                 
-                <div className="p-5 flex-1 flex flex-col">
-                  <div className="flex-1 space-y-3">
-                    <div className="flex items-start gap-2">
-                      <Calendar className="w-5 h-5 text-gray-400 shrink-0 mt-0.5" />
-                      <div>
-                        <p className="text-sm font-medium text-gray-900 dark:text-white">{new Date(donation.dateSlot).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">{donation.timeSlot}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-2 pt-2 border-t border-gray-100 dark:border-gray-800">
-                      <User className="w-5 h-5 text-gray-400 shrink-0 mt-0.5" />
-                      <div>
-                        <p className="text-sm font-medium text-gray-900 dark:text-white">{donator ? donator.name : 'Unknown Donator'}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">Contact: {donator ? donator.credential : 'No info'}</p>
-                      </div>
-                    </div>
-
-                    <div className="pt-3 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
-                      {donation.status === 'verified' ? (
-                        <span className="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-md bg-green-50 text-green-700 border-green-100 dark:bg-green-500/10 dark:text-green-400 dark:border-green-500/20 text-xs font-semibold border">
-                          <CheckCircle2 className="w-3 h-3" />
-                          Verified
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-md bg-yellow-50 text-yellow-700 border-yellow-100 dark:bg-yellow-500/10 dark:text-yellow-400 dark:border-yellow-500/20 text-xs font-semibold border">
-                          <motion.span 
-                            animate={{ opacity: [1, 0.5, 1] }} 
-                            transition={{ repeat: Infinity, duration: 1.5 }}
-                            className="w-1.5 h-1.5 rounded-full bg-yellow-500 dark:bg-yellow-400"
-                          />
-                          Pending Pickup
-                        </span>
-                      )}
-                      {donation.location && (
-                        <a 
-                          href={`https://www.google.com/maps?q=${donation.location.lat},${donation.location.lng}`} 
-                          target="_blank" 
-                          rel="noreferrer"
-                          className="text-xs font-medium text-brand-600 dark:text-brand-400 hover:text-brand-700 flex items-center gap-1"
-                        >
-                          <MapPin className="w-4 h-4" /> View Map
-                        </a>
-                      )}
-                    </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date</label>
+                    <input
+                      type="date"
+                      required
+                      value={newActivity.date}
+                      onChange={(e) => setNewActivity({...newActivity, date: e.target.value})}
+                      className="w-full px-4 py-2.5 rounded-xl border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all shadow-sm border"
+                    />
                   </div>
-                  <motion.button 
-                    whileTap={{ scale: donation.status === 'verified' ? 1 : 0.95 }}
-                    onClick={() => updateDonationStatus(donation.id, 'verified')}
-                    disabled={donation.status === 'verified'}
-                    className={`mt-5 w-full py-2 font-medium rounded-lg transition-colors text-sm ${
-                      donation.status === 'verified' 
-                        ? 'bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-500 cursor-not-allowed'
-                        : 'bg-brand-50 text-brand-700 hover:bg-brand-100 dark:bg-brand-500/10 dark:text-brand-400 dark:hover:bg-brand-500/20'
-                    }`}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Time</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g., 10:00 AM - 2:00 PM"
+                      value={newActivity.time}
+                      onChange={(e) => setNewActivity({...newActivity, time: e.target.value})}
+                      className="w-full px-4 py-2.5 rounded-xl border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all shadow-sm border"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Location</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g., 123 Main Street, Community Hall"
+                    value={newActivity.location}
+                    onChange={(e) => setNewActivity({...newActivity, location: e.target.value})}
+                    className="w-full px-4 py-2.5 rounded-xl border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all shadow-sm border"
+                  />
+                </div>
+
+                <div className="pt-4 flex items-center justify-end gap-3 border-t border-gray-100 dark:border-gray-800 mt-6">
+                  <button
+                    type="button"
+                    onClick={() => setShowActivityModal(false)}
+                    className="px-5 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
                   >
-                    {donation.status === 'verified' ? 'Verified' : 'Verify'}
+                    Cancel
+                  </button>
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    type="submit"
+                    className="px-6 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-sm font-bold shadow-sm shadow-brand-500/30 transition-all"
+                  >
+                    Create Activity
                   </motion.button>
                 </div>
-              </motion.div>
-              );
-            })}
-          </AnimatePresence>
-        </motion.div>
-      )}
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

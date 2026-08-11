@@ -138,6 +138,14 @@ export const AuthProvider = ({ children }) => {
     }));
   };
 
+  const addNgoEvent = (eventData) => {
+    setNgoEvents(prev => [{ ...eventData, id: Date.now().toString() }, ...prev]);
+  };
+
+  const deleteNgoEvent = (eventId) => {
+    setNgoEvents(prev => prev.filter(e => e.id !== eventId));
+  };
+
   return (
     <AuthContext.Provider value={{ 
       user, login, logout, 
@@ -145,7 +153,7 @@ export const AuthProvider = ({ children }) => {
       ngos, registerNgo, 
       users, registerUser,
       reviews, toggleLikeReview,
-      ngoEvents
+      ngoEvents, addNgoEvent, deleteNgoEvent
     }}>
       {children}
     </AuthContext.Provider>

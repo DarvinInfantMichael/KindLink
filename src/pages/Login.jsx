@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Heart, Building2, Phone, KeyRound, ArrowRight, User } from 'lucide-react';
+import { Heart, Building2, Phone, KeyRound, ArrowRight, ArrowLeft, User, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import PageTransition from '../components/PageTransition';
 import ThemeToggle from '../components/ThemeToggle';
@@ -92,7 +92,14 @@ export default function Login() {
 
   return (
     <PageTransition className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-brand-50 to-white dark:from-gray-950 dark:to-gray-900 transition-colors duration-300">
-      <div className="absolute top-4 right-4 z-50">
+      <div className="absolute top-6 left-6 sm:top-8 sm:left-8 z-50">
+        <Link to="/" className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white bg-white/80 dark:bg-gray-900/80 backdrop-blur-md rounded-full transition-all shadow-sm border border-gray-200 dark:border-gray-800 hover:shadow-md hover:scale-105 active:scale-95">
+          <ArrowLeft className="w-4 h-4" />
+          <span className="hidden sm:inline">Back to Home</span>
+          <span className="sm:hidden">Back</span>
+        </Link>
+      </div>
+      <div className="absolute top-6 right-6 sm:top-8 sm:right-8 z-50">
         <ThemeToggle />
       </div>
       <motion.div 
@@ -134,7 +141,7 @@ export default function Login() {
                 <motion.button
                   whileTap={{ scale: 0.95 }}
                   type="button"
-                  onClick={() => setRole('donator')}
+                  onClick={() => { setRole('donator'); setName(''); }}
                   className={`flex-1 py-3 px-4 rounded-xl border-2 flex flex-col items-center gap-2 transition-all duration-200 ${
                     role === 'donator' 
                       ? 'border-brand-500 bg-brand-50 text-brand-700 dark:bg-brand-500/20 dark:text-brand-400' 
@@ -148,7 +155,7 @@ export default function Login() {
                 <motion.button
                   whileTap={{ scale: 0.95 }}
                   type="button"
-                  onClick={() => setRole('receiver')}
+                  onClick={() => { setRole('receiver'); setName(''); }}
                   className={`flex-1 py-3 px-4 rounded-xl border-2 flex flex-col items-center gap-2 transition-all duration-200 ${
                     role === 'receiver' 
                       ? 'border-brand-500 bg-brand-50 text-brand-700 dark:bg-brand-500/20 dark:text-brand-400' 
@@ -169,14 +176,35 @@ export default function Login() {
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       {role === 'donator' ? <User className="h-5 w-5 text-gray-400" /> : <Building2 className="h-5 w-5 text-gray-400" />}
                     </div>
-                    <input
-                      type="text"
-                      required
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className="pl-10 w-full rounded-xl border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all py-2.5 shadow-sm border outline-none"
-                      placeholder={role === 'donator' ? 'John Doe' : 'Hope Foundation'}
-                    />
+                    {role === 'donator' ? (
+                      <input
+                        type="text"
+                        required
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className="pl-10 w-full rounded-xl border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all py-2.5 shadow-sm border outline-none"
+                        placeholder="John Doe"
+                      />
+                    ) : (
+                      <>
+                        <select
+                          required
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          className="pl-10 pr-10 w-full rounded-xl border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all py-2.5 shadow-sm border outline-none appearance-none"
+                        >
+                          <option value="" disabled>Select Organization</option>
+                          {ngos.map((ngo) => (
+                            <option key={ngo.id} value={ngo.name}>
+                              {ngo.name}
+                            </option>
+                          ))}
+                        </select>
+                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                          <ChevronDown className="h-5 w-5 text-gray-400" />
+                        </div>
+                      </>
+                    )}
                   </div>
                 </motion.div>
 
