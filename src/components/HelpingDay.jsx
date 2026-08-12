@@ -58,6 +58,7 @@ export default function HelpingDay() {
           <motion.button 
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            onClick={() => alert("Thanks for your support!")}
             className="bg-brand-500 hover:bg-brand-600 text-white font-bold py-3.5 px-8 rounded-xl shadow-lg shadow-brand-500/30 transition-colors"
           >
             Pledge Your Support
