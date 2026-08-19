@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, ImagePlus, Calendar, Clock, HeartHandshake, CheckCircle2, ChevronDown, MapPin, User, Building2, Phone, TrendingUp, Quote, X, Trash2 } from 'lucide-react';
+import { LogOut, ImagePlus, Calendar, Clock, HeartHandshake, CheckCircle2, ChevronDown, MapPin, User, Building2, Phone, TrendingUp, Quote, X, Trash2, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
@@ -11,6 +11,9 @@ import ThemeToggle from '../components/ThemeToggle';
 import RecentReviews from '../components/RecentReviews';
 import NgoEvents from '../components/NgoEvents';
 import HelpingDay from '../components/HelpingDay';
+import Confetti from 'react-confetti';
+import { useWindowSize } from 'react-use';
+import { createPortal } from 'react-dom';
 
 // Fix Leaflet default marker icon paths for React/Vite
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
@@ -25,7 +28,7 @@ L.Icon.Default.mergeOptions({
 });
 
 export default function Dashboard() {
-  const { user, logout, ngos, addDonation, updateDonationStatus, donations, users } = useAuth();
+  const { user, logout, ngos, addDonation, updateDonationStatus, removeDonation, donations, users } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -65,9 +68,9 @@ export default function Dashboard() {
         <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-2xl rounded-[2.5rem] shadow-2xl p-6 sm:p-10 border border-white/50 dark:border-gray-800/50 min-h-[80vh]">
           <AnimatePresence mode="wait">
             {user?.role === 'donator' ? (
-              <DonatorDashboard key="donator" ngos={ngos} addDonation={addDonation} currentUser={user} donations={donations} />
+              <DonatorDashboard key="donator" ngos={ngos} addDonation={addDonation} currentUser={user} donations={donations} removeDonation={removeDonation} />
             ) : (
-              <ReceiverDashboard key="receiver" donations={donations} currentUser={user} updateDonationStatus={updateDonationStatus} users={users} ngos={ngos} />
+              <ReceiverDashboard key="receiver" donations={donations} currentUser={user} updateDonationStatus={updateDonationStatus} removeDonation={removeDonation} users={users} ngos={ngos} />
             )}
           </AnimatePresence>
         </div>
@@ -198,7 +201,8 @@ function UpcomingActivitiesView({ activities, title, subtitle, isNgo, onAdd, onD
   );
 }
 
-function DonatorDashboard({ ngos, addDonation, currentUser, donations }) {
+function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDonation }) {
+  const { width, height } = useWindowSize();
   const { ngoEvents } = useAuth();
   const [selectedNgo, setSelectedNgo] = useState('');
   const [category, setCategory] = useState('');
@@ -296,6 +300,42 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations }) {
 
   return (
     <div className="w-full">
+      {success && typeof document !== 'undefined' && createPortal(
+        <Confetti 
+          width={width} 
+          height={height} 
+          recycle={true} 
+          numberOfPieces={800} 
+          gravity={0.15}
+          colors={['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899']}
+          style={{ position: 'fixed', top: 0, left: 0, zIndex: 999999, pointerEvents: 'none' }} 
+        />,
+        document.body
+      )}
+
+      {/* User Profile & Rating Card */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="glass rounded-2xl p-6 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm border border-brand-100 dark:border-brand-900/30 bg-gradient-to-r from-brand-50 to-emerald-50 dark:from-brand-950/20 dark:to-emerald-950/20"
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 bg-brand-100 dark:bg-brand-500/20 rounded-full flex items-center justify-center text-brand-600 dark:text-brand-400">
+            <User className="w-7 h-7" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white">{currentUser.name}</h3>
+            <p className="text-sm text-brand-600 dark:text-brand-400 font-medium">KindLink Donor</p>
+          </div>
+        </div>
+        <div className="flex flex-col sm:items-end">
+          <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Community Rating</span>
+          <span className="font-bold text-gray-900 dark:text-white flex items-center gap-1.5 bg-white dark:bg-gray-800 px-3 py-1.5 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 w-fit">
+            ⭐ {currentUser.rating ? currentUser.rating.toFixed(1) : '5.0'}
+          </span>
+        </div>
+      </motion.div>
+
       <RecentReviews />
       
       <motion.div 
@@ -589,6 +629,15 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations }) {
                         Pending
                       </span>
                     )}
+                    {donation.status !== 'verified' && (
+                      <button
+                        onClick={() => removeDonation(donation.id)}
+                        className="ml-3 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-md transition-colors inline-flex items-center justify-center"
+                        title="Cancel Donation"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
                   </div>
                 </motion.div>
               );
@@ -609,11 +658,98 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations }) {
 
       <NgoEvents />
       <HelpingDay />
+      <AppRating />
     </div>
   );
 }
 
-function ReceiverDashboard({ donations, currentUser, updateDonationStatus, users, ngos }) {
+function AppRating() {
+  const [rating, setRating] = useState(0);
+  const [hoveredRating, setHoveredRating] = useState(0);
+  const [feedback, setFeedback] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleRate = (value) => {
+    setRating(value);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setSubmitted(true);
+  };
+
+  if (submitted) {
+    return (
+      <div className="mt-8 glass rounded-2xl p-8 text-center border border-gray-200 dark:border-gray-800 flex flex-col items-center">
+        <div className="w-16 h-16 bg-green-100 dark:bg-green-500/20 rounded-full flex items-center justify-center mb-4">
+          <HeartHandshake className="w-8 h-8 text-green-500" />
+        </div>
+        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Thank You for Your Feedback!</h3>
+        <p className="text-gray-500 dark:text-gray-400">Your rating and feedback help us improve KindLink and bring more smiles to the community.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-8 glass rounded-2xl p-8 text-center border border-gray-200 dark:border-gray-800">
+      <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">How is your experience with KindLink?</h3>
+      <p className="text-gray-500 dark:text-gray-400 mb-6">We value your feedback and it helps us connect more donors with NGOs efficiently.</p>
+      <div className="flex items-center justify-center gap-2">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <motion.button
+            key={star}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onMouseEnter={() => setHoveredRating(star)}
+            onMouseLeave={() => setHoveredRating(0)}
+            onClick={() => handleRate(star)}
+            className="p-2 transition-colors focus:outline-none"
+          >
+            <Star 
+              className={`w-10 h-10 transition-colors duration-200 ${
+                star <= (hoveredRating || rating) 
+                  ? 'fill-brand-500 text-brand-500 drop-shadow-md' 
+                  : 'text-gray-300 dark:text-gray-600'
+              }`} 
+            />
+          </motion.button>
+        ))}
+      </div>
+      
+      <AnimatePresence>
+        {rating > 0 && !submitted && (
+          <motion.form 
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            onSubmit={handleSubmit}
+            className="mt-6 max-w-lg mx-auto overflow-hidden"
+          >
+            <p className="mb-4 font-bold text-brand-600 dark:text-brand-400">
+              {['Needs Improvement', 'Fair', 'Good', 'Very Good', 'Excellent!'][rating - 1]}
+            </p>
+            <textarea
+              placeholder="Tell us more about your experience... (optional)"
+              value={feedback}
+              onChange={(e) => setFeedback(e.target.value)}
+              className="w-full rounded-xl border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all p-4 shadow-sm border outline-none min-h-[100px] resize-y mb-4"
+            />
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              type="submit"
+              className="px-8 py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold shadow-md shadow-brand-500/20 transition-all"
+            >
+              Submit Feedback
+            </motion.button>
+          </motion.form>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function ReceiverDashboard({ donations, currentUser, updateDonationStatus, removeDonation, users, ngos }) {
   const { ngoEvents, addNgoEvent, deleteNgoEvent } = useAuth();
   
   const myDonations = donations.filter(d => d.ngoId === currentUser.id);
@@ -925,18 +1061,28 @@ function ReceiverDashboard({ donations, currentUser, updateDonationStatus, users
                         )}
                       </div>
                     </div>
-                    <motion.button 
-                      whileTap={{ scale: donation.status === 'verified' ? 1 : 0.97 }}
-                      onClick={() => updateDonationStatus(donation.id, 'verified')}
-                      disabled={donation.status === 'verified'}
-                      className={`mt-5 w-full py-2.5 font-bold rounded-xl transition-all text-sm shadow-sm ${
-                        donation.status === 'verified' 
-                          ? 'bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-500 cursor-not-allowed border border-gray-200 dark:border-gray-700'
-                          : 'bg-brand-600 text-white hover:bg-brand-700 hover:shadow-brand-500/30 hover:shadow-lg'
-                      }`}
-                    >
-                      {donation.status === 'verified' ? 'Verified Successfully' : 'Verify Reception'}
-                    </motion.button>
+                    <div className="mt-5 flex gap-3">
+                      <motion.button 
+                        whileTap={{ scale: donation.status === 'verified' ? 1 : 0.97 }}
+                        onClick={() => updateDonationStatus(donation.id, 'verified')}
+                        disabled={donation.status === 'verified'}
+                        className={`flex-1 py-2.5 font-bold rounded-xl transition-all text-sm shadow-sm ${
+                          donation.status === 'verified' 
+                            ? 'bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-500 cursor-not-allowed border border-gray-200 dark:border-gray-700'
+                            : 'bg-brand-600 text-white hover:bg-brand-700 hover:shadow-brand-500/30 hover:shadow-lg'
+                        }`}
+                      >
+                        {donation.status === 'verified' ? 'Verified Successfully' : 'Verify Reception'}
+                      </motion.button>
+                      <motion.button
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() => removeDonation(donation.id)}
+                        className="px-4 py-2.5 font-bold rounded-xl transition-all text-sm shadow-sm bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20 border border-red-100 dark:border-red-500/20 flex items-center justify-center"
+                        title="Remove Donation"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </motion.button>
+                    </div>
                   </div>
                 </motion.div>
                 );

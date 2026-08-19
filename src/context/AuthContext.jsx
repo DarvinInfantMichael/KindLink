@@ -117,12 +117,16 @@ export const AuthProvider = ({ children }) => {
     );
   };
 
+  const removeDonation = (donationId) => {
+    setDonations((prev) => prev.filter(d => d.id !== donationId));
+  };
+
   const registerNgo = (ngoData) => {
     setNgos((prev) => [...prev, { ...ngoData, id: Date.now().toString(), rating: 5.0 }]);
   };
 
   const registerUser = (userData) => {
-    setUsers((prev) => [...prev, userData]);
+    setUsers((prev) => [...prev, { ...userData, rating: 5.0 }]);
   };
 
   const toggleLikeReview = (reviewId, userId) => {
@@ -149,7 +153,7 @@ export const AuthProvider = ({ children }) => {
   return (
     <AuthContext.Provider value={{ 
       user, login, logout, 
-      donations, addDonation, updateDonationStatus, 
+      donations, addDonation, updateDonationStatus, removeDonation, 
       ngos, registerNgo, 
       users, registerUser,
       reviews, toggleLikeReview,
