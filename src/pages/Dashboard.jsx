@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { LogOut, ImagePlus, Calendar, Clock, HeartHandshake, CheckCircle2, ChevronDown, MapPin, User, Building2, Phone, TrendingUp, Quote, X, Trash2, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -121,9 +121,16 @@ function UpcomingActivitiesView({ activities, title, subtitle, isNgo, onAdd, onD
                initial={{ opacity: 0, scale: 0.95 }}
                animate={{ opacity: 1, scale: 1 }}
                exit={{ opacity: 0, scale: 0.95 }}
-               className="glass p-6 rounded-2xl border border-gray-100 dark:border-gray-800 hover:shadow-lg transition-all group cursor-pointer relative overflow-hidden flex flex-col"
+               className="glass p-5 rounded-2xl border border-gray-100 dark:border-gray-800 hover:shadow-lg transition-all group cursor-pointer relative overflow-hidden flex flex-col"
              >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/5 rounded-bl-full -mr-4 -mt-4 transition-transform duration-500 group-hover:scale-110 pointer-events-none"></div>
+                <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/5 rounded-bl-full -mr-4 -mt-4 transition-transform duration-500 group-hover:scale-110 pointer-events-none z-0"></div>
+                
+                {activity.image && (
+                  <div className="w-full h-40 mb-4 rounded-xl overflow-hidden shadow-sm relative z-10">
+                    <img src={activity.image} alt={activity.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                  </div>
+                )}
+
                 <div className="flex items-start justify-between mb-4 relative z-10">
                   <div className="p-3 bg-brand-50 dark:bg-brand-500/20 text-brand-600 dark:text-brand-400 rounded-xl">
                     <Calendar className="w-5 h-5" />
@@ -211,8 +218,11 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
   const [dateSlot, setDateSlot] = useState('');
   const [timeSlot, setTimeSlot] = useState('');
   const [location, setLocation] = useState({ lat: 40.7128, lng: -74.0060 }); // Default: New York
+  const [searchAddress, setSearchAddress] = useState('');
+  const [isSearchingAddress, setIsSearchingAddress] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
   
   const fileInputRef = useRef(null);
 
@@ -233,13 +243,43 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
   }, []);
 
   function LocationMarker() {
+    const map = useMap();
     useMapEvents({
       click(e) {
         setLocation(e.latlng);
       },
     });
+
+    useEffect(() => {
+      if (location) {
+        map.flyTo(location, map.getZoom());
+      }
+    }, [location, map]);
+
     return location ? <Marker position={location} /> : null;
   }
+
+  const handleSearchLocation = async () => {
+    if (!searchAddress.trim()) return;
+    setIsSearchingAddress(true);
+    try {
+      const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchAddress)}`);
+      const data = await response.json();
+      if (data && data.length > 0) {
+        setLocation({
+          lat: parseFloat(data[0].lat),
+          lng: parseFloat(data[0].lon)
+        });
+      } else {
+        alert("Location not found. Please try a different address.");
+      }
+    } catch (error) {
+      console.error("Error searching location:", error);
+      alert("Error searching location.");
+    } finally {
+      setIsSearchingAddress(false);
+    }
+  };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -381,27 +421,30 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
 
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* NGO Selection */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Select Organization</label>
+              <div className="group">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5 group-focus-within:text-brand-600 dark:group-focus-within:text-brand-400 transition-colors">Select Organization</label>
                 <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                    <Building2 className="h-5 w-5 text-gray-400 group-focus-within:text-brand-500 transition-colors" />
+                  </div>
                   <select
                     required
                     value={selectedNgo}
                     onChange={(e) => setSelectedNgo(e.target.value)}
-                    className="w-full appearance-none rounded-xl border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all py-3 pl-4 pr-10 shadow-sm border outline-none"
+                    className="w-full appearance-none rounded-xl border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-900/60 text-gray-900 dark:text-white focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 hover:border-brand-300 dark:hover:border-brand-700 transition-all duration-300 py-3 pl-11 pr-10 shadow-sm outline-none backdrop-blur-sm cursor-pointer"
                   >
                     <option value="" disabled>Choose an NGO...</option>
                     {ngos.map((ngo) => (
                       <option key={ngo.id} value={ngo.id}>{ngo.name} ({ngo.category}) - {ngo.rating ? ngo.rating.toFixed(1) : '5.0'} ⭐</option>
                     ))}
                   </select>
-                  <ChevronDown className="absolute right-3 top-3.5 h-5 w-5 text-gray-400 pointer-events-none" />
+                  <ChevronDown className="absolute right-3.5 top-3.5 h-5 w-5 text-gray-400 pointer-events-none" />
                 </div>
               </div>
 
               {/* Category */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">What are you donating?</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">What are you donating?</label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {categories.map((cat) => (
                     <motion.button
@@ -409,10 +452,10 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
                       key={cat}
                       type="button"
                       onClick={() => setCategory(cat)}
-                      className={`py-2 px-4 rounded-xl border transition-all text-sm font-medium ${
+                      className={`py-3 px-4 rounded-xl border transition-all text-sm font-semibold shadow-sm ${
                         category === cat 
-                          ? 'border-brand-500 bg-brand-50 text-brand-700 dark:bg-brand-500/20 dark:text-brand-400' 
-                          : 'border-gray-200 bg-white text-gray-600 hover:border-brand-200 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-brand-500/50 dark:hover:bg-gray-700'
+                          ? 'border-brand-500 bg-brand-50 text-brand-700 dark:border-brand-500 dark:bg-brand-500/20 dark:text-brand-400 ring-1 ring-brand-500' 
+                          : 'border-gray-200 bg-white text-gray-600 hover:border-brand-400 hover:bg-brand-50 hover:text-brand-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-brand-500/80 dark:hover:bg-brand-500/20 dark:hover:text-brand-300'
                       }`}
                     >
                       {cat}
@@ -430,14 +473,14 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
                     exit={{ opacity: 0, height: 0 }}
                     className="overflow-hidden"
                   >
-                    <div className="pt-1">
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Please specify</label>
+                    <div className="pt-1 group">
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5 group-focus-within:text-brand-600 dark:group-focus-within:text-brand-400 transition-colors">Please specify</label>
                       <input
                         type="text"
                         required
                         value={customCategory}
                         onChange={(e) => setCustomCategory(e.target.value)}
-                        className="w-full rounded-xl border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all py-2.5 px-4 shadow-sm border outline-none"
+                        className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-900/60 text-gray-900 dark:text-white focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 hover:border-brand-300 dark:hover:border-brand-700 transition-all duration-300 py-3 px-4 shadow-sm outline-none backdrop-blur-sm"
                         placeholder="E.g., Blankets, Toys"
                       />
                     </div>
@@ -501,8 +544,8 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
 
               {/* Date and Time */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Preferred Date</label>
+                <div className="group">
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5 group-focus-within:text-brand-600 dark:group-focus-within:text-brand-400 transition-colors">Preferred Date</label>
                   <div className="relative">
                     <input
                       type="date"
@@ -510,35 +553,62 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
                       value={dateSlot}
                       onChange={(e) => setDateSlot(e.target.value)}
                       min={new Date().toISOString().split('T')[0]}
-                      className="w-full rounded-xl border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all py-2.5 pl-10 shadow-sm border outline-none"
+                      className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-900/60 text-gray-900 dark:text-white focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 hover:border-brand-300 dark:hover:border-brand-700 transition-all duration-300 py-3 pl-11 pr-4 shadow-sm outline-none backdrop-blur-sm cursor-pointer"
                     />
-                    <Calendar className="absolute left-3 top-3 h-5 w-5 text-gray-400 pointer-events-none" />
+                    <Calendar className="absolute left-3.5 top-3.5 h-5 w-5 text-gray-400 group-focus-within:text-brand-500 transition-colors pointer-events-none" />
                   </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Preferred Time Slot</label>
+                <div className="group">
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5 group-focus-within:text-brand-600 dark:group-focus-within:text-brand-400 transition-colors">Preferred Time Slot</label>
                   <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                      <Clock className="h-5 w-5 text-gray-400 group-focus-within:text-brand-500 transition-colors" />
+                    </div>
                     <select
                       required
                       value={timeSlot}
                       onChange={(e) => setTimeSlot(e.target.value)}
-                      className="w-full appearance-none rounded-xl border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all py-2.5 pl-10 pr-10 shadow-sm border outline-none"
+                      className="w-full appearance-none rounded-xl border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-900/60 text-gray-900 dark:text-white focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 hover:border-brand-300 dark:hover:border-brand-700 transition-all duration-300 py-3 pl-11 pr-10 shadow-sm outline-none backdrop-blur-sm cursor-pointer"
                     >
                       <option value="" disabled>Select a slot...</option>
                       <option value="Morning (9AM - 12PM)">Morning (9AM - 12PM)</option>
                       <option value="Afternoon (12PM - 4PM)">Afternoon (12PM - 4PM)</option>
                       <option value="Evening (4PM - 7PM)">Evening (4PM - 7PM)</option>
                     </select>
-                    <Clock className="absolute left-3 top-3 h-5 w-5 text-gray-400 pointer-events-none" />
-                    <ChevronDown className="absolute right-3 top-3 h-5 w-5 text-gray-400 pointer-events-none" />
+                    <ChevronDown className="absolute right-3.5 top-3.5 h-5 w-5 text-gray-400 pointer-events-none" />
                   </div>
                 </div>
               </div>
 
               {/* Map Location Picker */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Pickup Location</label>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">Drag the map and click to pinpoint your exact pickup location.</p>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Pickup Location</label>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">Search for an address or drag the map and click to pinpoint your exact pickup location.</p>
+                
+                <div className="flex gap-3 mb-4 group">
+                  <div className="relative flex-1">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                      <MapPin className="h-5 w-5 text-gray-400 group-focus-within:text-brand-500 transition-colors" />
+                    </div>
+                    <input
+                      type="text"
+                      value={searchAddress}
+                      onChange={(e) => setSearchAddress(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleSearchLocation())}
+                      placeholder="Enter street, city, or zip code"
+                      className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-900/60 text-gray-900 dark:text-white focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 hover:border-brand-300 dark:hover:border-brand-700 transition-all duration-300 py-3 pl-11 pr-4 shadow-sm outline-none backdrop-blur-sm"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleSearchLocation}
+                    disabled={isSearchingAddress || !searchAddress.trim()}
+                    className="px-6 py-3 bg-brand-100 dark:bg-brand-500/20 text-brand-700 dark:text-brand-400 font-bold rounded-xl hover:bg-brand-200 dark:hover:bg-brand-500/30 transition-colors disabled:opacity-50 shadow-sm"
+                  >
+                    {isSearchingAddress ? 'Searching...' : 'Search'}
+                  </button>
+                </div>
+
                 <div className="h-64 w-full rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm relative z-0">
                   <MapContainer 
                     center={location} 
@@ -555,13 +625,28 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-gray-100 dark:border-gray-800">
+              <div className="pt-4 flex items-center gap-3 border-t border-gray-100 dark:border-gray-800">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedNgo('');
+                    setCategory('');
+                    setCustomCategory('');
+                    setImagePreview(null);
+                    setDateSlot('');
+                    setTimeSlot('');
+                    setSearchAddress('');
+                  }}
+                  className="px-5 py-3.5 text-sm font-bold text-gray-600 dark:text-gray-300 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-xl transition-colors w-1/3 text-center"
+                >
+                  Clear Form
+                </button>
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   type="submit"
                   disabled={isSubmitting || !selectedNgo || !category || (category==='Other' && !customCategory) || !dateSlot || !timeSlot}
-                  className="w-full bg-brand-600 hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-3.5 rounded-xl transition-all shadow-lg shadow-brand-500/30"
+                  className="w-2/3 bg-brand-600 hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-3.5 rounded-xl transition-all shadow-lg shadow-brand-500/30"
                 >
                   {isSubmitting ? 'Scheduling...' : 'Schedule Donation'}
                 </motion.button>
@@ -573,30 +658,45 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
 
       {/* Donator History */}
       <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800 overflow-hidden">
-        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Donated Items to NGOs</h3>
-        {donations.filter(d => d.donatorId === currentUser.id).length === 0 ? (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center text-gray-500 dark:text-gray-400 py-8 bg-white/50 dark:bg-gray-900/50 rounded-xl border border-gray-100 dark:border-gray-800"
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white">Donated Items to NGOs</h3>
+          <button 
+            onClick={() => setShowHistory(!showHistory)}
+            className="px-4 py-2 bg-brand-100 dark:bg-brand-500/20 text-brand-700 dark:text-brand-400 rounded-xl text-sm font-bold transition-colors hover:bg-brand-200 dark:hover:bg-brand-500/30"
           >
-            You haven't made any donations yet.
-          </motion.div>
-        ) : (
-          <motion.div 
-            variants={staggerList}
-            initial="hidden"
-            animate="show"
-            className="space-y-4"
-          >
-            {donations.filter(d => d.donatorId === currentUser.id).map(donation => {
-              const ngo = ngos.find(n => n.id === donation.ngoId);
-              return (
-                <motion.div 
-                  variants={listItem}
-                  key={donation.id} 
-                  className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm flex items-center gap-4"
+            {showHistory ? 'Hide History' : 'View History'}
+          </button>
+        </div>
+
+        <AnimatePresence>
+          {showHistory && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="overflow-hidden"
+            >
+              {donations.filter(d => d.donatorId === currentUser.id).length === 0 ? (
+                <div 
+                  className="text-center text-gray-500 dark:text-gray-400 py-8 bg-white/50 dark:bg-gray-900/50 rounded-xl border border-gray-100 dark:border-gray-800 mb-6"
                 >
+                  You haven't made any donations yet.
+                </div>
+              ) : (
+                <motion.div 
+                  variants={staggerList}
+                  initial="hidden"
+                  animate="show"
+                  className="space-y-4 mb-6"
+                >
+                  {donations.filter(d => d.donatorId === currentUser.id).map(donation => {
+                    const ngo = ngos.find(n => n.id === donation.ngoId);
+                    return (
+                      <motion.div 
+                        variants={listItem}
+                        key={donation.id} 
+                        className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm flex items-center gap-4"
+                      >
                   {donation.image ? (
                     <img src={donation.image} alt="Donation" className="w-16 h-16 rounded-lg object-cover" />
                   ) : (
@@ -644,6 +744,9 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
             })}
           </motion.div>
         )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
       </motion.div>
       
