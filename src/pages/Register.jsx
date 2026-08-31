@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Heart, Building2, User, Phone, Mail } from 'lucide-react';
+import { Heart, Building2, User, Phone, Mail, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import PageTransition from '../components/PageTransition';
-import ThemeToggle from '../components/ThemeToggle';
 
 export default function Register() {
   const [role, setRole] = useState('donator'); // 'donator' | 'receiver'
@@ -57,9 +56,14 @@ export default function Register() {
 
   return (
     <PageTransition className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-brand-50 to-white dark:from-gray-950 dark:to-gray-900 transition-colors duration-300">
-      <div className="absolute top-4 right-4 z-50">
-        <ThemeToggle />
+      <div className="absolute top-6 left-6 sm:top-8 sm:left-8 z-50">
+        <Link to="/" className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white bg-white/80 dark:bg-gray-900/80 backdrop-blur-md rounded-full transition-all shadow-sm border border-gray-200 dark:border-gray-800 hover:shadow-md hover:scale-105 active:scale-95">
+          <ArrowLeft className="w-4 h-4" />
+          <span className="hidden sm:inline">Back to Home</span>
+          <span className="sm:hidden">Back</span>
+        </Link>
       </div>
+
       <motion.div 
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}

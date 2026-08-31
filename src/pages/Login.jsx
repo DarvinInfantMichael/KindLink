@@ -4,9 +4,9 @@ import { useAuth } from '../context/AuthContext';
 import { Heart, Building2, Phone, KeyRound, ArrowRight, ArrowLeft, User, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import PageTransition from '../components/PageTransition';
-import ThemeToggle from '../components/ThemeToggle';
 
 export default function Login() {
+  console.log("Rendering Login Page");
   const [step, setStep] = useState(1); // 1: Role & Credential, 2: OTP
   const [role, setRole] = useState('donator');
   const [name, setName] = useState('');
@@ -57,10 +57,8 @@ export default function Login() {
     // Simulate sending OTP
     const mockOtp = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedOtp(mockOtp);
+    setOtp(mockOtp); // Auto-fill for seamless prototype testing
     setStep(2);
-    
-    // For prototype purposes, alert the OTP
-    alert(`[Simulated] Your KindLink OTP is: ${mockOtp}`);
   };
 
   const handleVerifyOtp = (e) => {
@@ -83,7 +81,18 @@ export default function Login() {
       };
     } else {
       const existingUser = users.find(u => u.credential === credential);
-      userToLogin = existingUser;
+      if (existingUser) {
+        userToLogin = existingUser;
+      } else {
+        // Fallback if context state hasn't propagated yet
+        userToLogin = {
+          id: Date.now().toString(),
+          name: name.trim(),
+          credential: credential.trim(),
+          role: 'donator'
+        };
+        registerUser(userToLogin);
+      }
     }
     
     login(userToLogin);
@@ -99,9 +108,7 @@ export default function Login() {
           <span className="sm:hidden">Back</span>
         </Link>
       </div>
-      <div className="absolute top-6 right-6 sm:top-8 sm:right-8 z-50">
-        <ThemeToggle />
-      </div>
+
       <motion.div 
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -190,7 +197,13 @@ export default function Login() {
                         <select
                           required
                           value={name}
-                          onChange={(e) => setName(e.target.value)}
+                          onChange={(e) => {
+                            setName(e.target.value);
+                            const selectedNgo = ngos.find(n => n.name === e.target.value);
+                            if (selectedNgo) {
+                              setCredential(selectedNgo.credential);
+                            }
+                          }}
                           className="pl-10 pr-10 w-full rounded-xl border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all py-2.5 shadow-sm border outline-none appearance-none"
                         >
                           <option value="" disabled>Select Organization</option>

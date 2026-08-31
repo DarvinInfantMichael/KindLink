@@ -1,339 +1,151 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { HeartHandshake, Building2, CalendarCheck, ArrowRight, ShieldCheck, Clock, Star, TrendingUp, Smartphone, FileText, Award, ChevronRight } from 'lucide-react';
+import { Star, Award, Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
 import PageTransition from '../components/PageTransition';
-import ThemeToggle from '../components/ThemeToggle';
+import InteractiveHelpingSection from '../components/InteractiveHelpingSection';
 
 export default function Landing() {
   const verifiedNgos = [
-    { name: "Food Rescue Foundation", category: "Food", rating: 5, reviews: 124, impact: "10,000+ meals served", image: "/images/ngo1.png" },
-    { name: "Books for All", category: "Education", rating: 5, reviews: 89, impact: "5,000+ books donated", image: "/images/ngo2.png" },
-    { name: "Hope Furniture Bank", category: "Shelter", rating: 4.8, reviews: 210, impact: "2,000+ homes furnished", image: "/images/ngo3.png" },
-    { name: "Warm Clothing Drive", category: "Clothing", rating: 4.9, reviews: 156, impact: "15,000+ clothes distributed", image: "/images/ngo4.png" },
+    { name: "Food Rescue Foundation", role: "Food & Meals", image: "/images/ngo1.jpg" },
+    { name: "Books for All", role: "Education", image: "/images/ngo2.jpg" },
+    { name: "Hope Furniture Bank", role: "Shelter", image: "/images/ngo3.jpg" },
+    { name: "Warm Clothing Drive", role: "Clothing", image: "/images/ngo4.jpg" },
+    { name: "Green Earth Initiative", role: "Environment", image: "/images/ngo5.jpg" },
+    { name: "Tech for Good", role: "Digital Access", image: "/images/ngo6.jpg" },
+    { name: "Elderly Care Org", role: "Senior Support", image: "/images/ngo7.jpg" },
+    { name: "Stray Animal Rescue", role: "Animal Welfare", image: "/images/ngo8.jpg" },
   ];
-
-  const roadmap = [
-    { title: "Live GPS Tracking", desc: "Track your donation pickups in real-time.", icon: <HeartHandshake className="w-6 h-6 text-brand-500" />, status: "Coming Soon" },
-    { title: "Mobile App Launch", desc: "Native iOS and Android apps for easier giving.", icon: <Smartphone className="w-6 h-6 text-brand-500" />, status: "Q3 2026" },
-    { title: "Automated Tax Receipts", desc: "Instant tax deductions generated after donations.", icon: <FileText className="w-6 h-6 text-brand-500" />, status: "Q4 2026" },
-    { title: "Community Leaderboards", desc: "Gamified donation tracking with badges.", icon: <TrendingUp className="w-6 h-6 text-brand-500" />, status: "2027" },
-  ];
-
-  const fadeInUp = {
-    hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
-  };
-
-  const staggerContainer = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
-  };
 
   return (
-    <PageTransition className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col font-sans selection:bg-brand-100 selection:text-brand-900 dark:selection:bg-brand-500/30 dark:selection:text-brand-100 transition-colors duration-300">
-      {/* Navbar */}
-      <header className="bg-gradient-to-r from-brand-50/80 via-white/80 to-teal-50/80 dark:from-brand-950/80 dark:via-gray-950/80 dark:to-teal-950/80 backdrop-blur-md border-b border-brand-100 dark:border-brand-900 sticky top-0 z-50 transition-all duration-300 hover:shadow-md hover:shadow-brand-500/10 hover:border-brand-300 dark:hover:border-brand-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 group cursor-pointer">
-            <motion.div 
-              whileHover={{ rotate: 12, scale: 1.1 }}
-              className="bg-brand-500 p-2 rounded-xl transition-transform duration-300"
-            >
-              <HeartHandshake className="w-6 h-6 text-white" />
-            </motion.div>
-            <span className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">KindLink</span>
-          </Link>
-          <div className="flex items-center gap-3 sm:gap-6">
-            <ThemeToggle />
-            <Link to="/login" className="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-brand-600 dark:hover:text-brand-400 transition-colors hidden sm:block">Log in</Link>
-            <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.95 }}>
-              <Link to="/register" className="text-xs sm:text-sm font-bold bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-brand-600 dark:hover:bg-brand-500 dark:hover:text-white px-4 py-2 sm:px-6 sm:py-2.5 rounded-full shadow-lg hover:shadow-brand-500/30 transition-all">Sign up</Link>
-            </motion.div>
-          </div>
-        </div>
-      </header>
-
+    <PageTransition className="flex flex-col font-sans selection:bg-brand-900 selection:text-white transition-colors duration-300">
+      
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-white dark:bg-gray-950 pt-20 pb-32 lg:pt-32 lg:pb-40 transition-colors">
-        <div className="absolute top-0 right-0 -translate-y-12 translate-x-1/3">
-          <motion.div 
-            animate={{ scale: [1, 1.05, 1], rotate: [0, 5, 0] }}
-            transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-            className="w-[800px] h-[800px] bg-gradient-to-br from-brand-100/40 dark:from-brand-500/10 to-brand-50 dark:to-transparent rounded-full blur-3xl opacity-70"
-          />
+      <section className="min-h-screen flex flex-col justify-center pt-20 pb-20 px-4 sm:px-6 lg:px-8 border-b border-white/10 relative overflow-hidden bg-black/40 backdrop-blur-sm">
+        <div className="absolute top-0 right-0 p-10 opacity-10">
+          <Heart className="w-96 h-96 text-brand-400" />
         </div>
-        <div className="absolute bottom-0 left-0 translate-y-1/3 -translate-x-1/3">
-          <motion.div 
-            animate={{ scale: [1, 1.05, 1], rotate: [0, -5, 0] }}
-            transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-            className="w-[600px] h-[600px] bg-gradient-to-tr from-brand-100/40 dark:from-brand-500/10 to-transparent rounded-full blur-3xl opacity-70"
-          />
-        </div>
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <motion.div 
-            initial="hidden"
-            animate="visible"
-            variants={staggerContainer}
-            className="text-center max-w-4xl mx-auto"
-          >
-            <motion.div variants={fadeInUp} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-gray-900 border border-brand-100 dark:border-gray-800 shadow-sm text-brand-700 dark:text-brand-400 text-sm font-bold mb-8 hover:shadow-md transition-shadow cursor-default">
-              <span className="relative flex h-2.5 w-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand-500"></span>
-              </span>
-              The future of giving is here
-            </motion.div>
-            <motion.h1 variants={fadeInUp} className="text-5xl md:text-7xl font-extrabold text-gray-900 dark:text-white tracking-tight mb-8 leading-tight">
-              Connect Kindness to <br/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 via-brand-500 to-teal-400 dark:from-brand-400 dark:via-brand-500 dark:to-teal-300 relative">
-                Real Needs
-                <svg className="absolute w-full h-4 -bottom-1 left-0 text-brand-200/50 dark:text-brand-500/20" viewBox="0 0 100 10" preserveAspectRatio="none">
-                  <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="4" fill="transparent" />
-                </svg>
-              </span>
-            </motion.h1>
-            <motion.p variants={fadeInUp} className="text-xl md:text-2xl text-gray-500 dark:text-gray-400 mb-12 leading-relaxed">
-              KindLink bridges the gap between generous individuals and verified organizations. Transform your surplus into someone else's survival.
-            </motion.p>
-            <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row items-center justify-center gap-5">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
-                <Link 
-                  to="/dashboard"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 text-white font-bold py-4 px-10 rounded-full transition-all shadow-xl shadow-brand-500/30 text-lg group"
-                >
-                  Explore App <motion.div whileHover={{ x: 5 }}><ArrowRight className="w-6 h-6" /></motion.div>
-                </Link>
-              </motion.div>
-              <motion.a 
-                whileHover={{ scale: 1.05 }} 
-                whileTap={{ scale: 0.95 }}
-                href="#how-it-works" 
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 font-bold py-4 px-10 rounded-full transition-all border-2 border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-lg"
-              >
-                See How It Works
-              </motion.a>
-            </motion.div>
+        <div className="max-w-7xl mx-auto w-full relative z-10 text-center lg:text-left">
+          <h1 className="text-6xl md:text-8xl font-black tracking-tight mb-8 leading-none uppercase drop-shadow-2xl text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-300 to-white hover:from-brand-300 hover:via-teal-300 hover:to-brand-300 bg-[length:200%_auto] bg-[position:left_center] hover:bg-[position:right_center] transition-all duration-1000 ease-out cursor-default">
+            Connect Kindness <br className="hidden lg:block"/>To Real Needs
+          </h1>
+          <p className="text-xl md:text-3xl text-white/80 font-bold max-w-3xl leading-relaxed mb-10 drop-shadow-md hover:text-white transition-colors duration-500 cursor-default">
+            KindLink bridges the gap between generous individuals and verified organizations. Transform your surplus into someone else's survival.
+          </p>
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="inline-block mt-4 relative z-20">
+            <Link 
+              to="/register"
+              className="inline-block bg-gradient-to-r from-brand-500 to-teal-400 text-white font-black uppercase tracking-widest py-5 px-12 rounded-full hover:from-brand-400 hover:to-teal-300 transition-all shadow-[0_0_30px_rgba(16,185,129,0.5)] hover:shadow-[0_0_50px_rgba(16,185,129,0.8)] text-lg border border-brand-300"
+            >
+              Join The Movement
+            </Link>
           </motion.div>
         </div>
       </section>
 
-      {/* Stats/Trust Bar */}
-      <section className="border-y border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-950 overflow-hidden transition-colors">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.8 }}
-          transition={{ duration: 0.6 }}
-          className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10"
-        >
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-x divide-gray-100 dark:divide-gray-800">
-            <div>
-              <p className="text-4xl font-black text-gray-900 dark:text-white mb-1">50+</p>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Verified NGOs</p>
+      {/* Stats Section (Red Fill) */}
+      <section className="min-h-screen flex flex-col justify-center bg-red-950/40 backdrop-blur-md py-20 px-4 sm:px-6 lg:px-8 border-b border-white/10">
+        <div className="max-w-7xl mx-auto w-full text-center">
+          <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tight mb-16 leading-tight drop-shadow-lg text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-300 to-white hover:from-red-400 hover:via-pink-400 hover:to-orange-400 bg-[length:200%_auto] bg-[position:left_center] hover:bg-[position:right_center] transition-all duration-1000 ease-out cursor-default">
+            Our KindLink Community has now grown to 10,000+ Members Strong Across the Country
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div className="flex flex-col gap-2 group cursor-default">
+              <h3 className="text-5xl md:text-7xl font-black drop-shadow-[0_0_15px_rgba(16,185,129,0.5)] text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-teal-500 group-hover:from-yellow-300 group-hover:to-orange-400 transition-all duration-700">50+</h3>
+              <p className="text-xl font-bold text-white uppercase tracking-wider group-hover:text-yellow-300 transition-colors duration-700">Verified NGOs</p>
             </div>
-            <div>
-              <p className="text-4xl font-black text-gray-900 dark:text-white mb-1">10k+</p>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Active Donators</p>
+            <div className="flex flex-col gap-2 group cursor-default">
+              <h3 className="text-5xl md:text-7xl font-black drop-shadow-[0_0_15px_rgba(16,185,129,0.5)] text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-teal-500 group-hover:from-blue-300 group-hover:to-cyan-400 transition-all duration-700">32k</h3>
+              <p className="text-xl font-bold text-white uppercase tracking-wider group-hover:text-cyan-300 transition-colors duration-700">Items Donated</p>
             </div>
-            <div>
-              <p className="text-4xl font-black text-brand-600 dark:text-brand-500 mb-1">32k</p>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Items Donated</p>
+            <div className="flex flex-col gap-2 group cursor-default">
+              <h3 className="text-5xl md:text-7xl font-black drop-shadow-[0_0_15px_rgba(16,185,129,0.5)] text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-teal-500 group-hover:from-purple-300 group-hover:to-pink-400 transition-all duration-700">10k+</h3>
+              <p className="text-xl font-bold text-white uppercase tracking-wider group-hover:text-pink-300 transition-colors duration-700">Active Donators</p>
             </div>
-            <div>
-              <p className="text-4xl font-black text-gray-900 dark:text-white mb-1">100%</p>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Transparent</p>
+            <div className="flex flex-col gap-2 group cursor-default">
+              <h3 className="text-5xl md:text-7xl font-black drop-shadow-[0_0_15px_rgba(16,185,129,0.5)] text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-teal-500 group-hover:from-green-300 group-hover:to-emerald-400 transition-all duration-700">100%</h3>
+              <p className="text-xl font-bold text-white uppercase tracking-wider group-hover:text-green-300 transition-colors duration-700">Transparent</p>
             </div>
           </div>
-        </motion.div>
+        </div>
       </section>
 
-      {/* Verified NGOs Section */}
-      <section className="py-24 bg-gray-50 dark:bg-gray-900 transition-colors" id="ngos">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.5 }}
-            variants={fadeInUp}
-            className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6"
-          >
-            <div className="max-w-2xl">
-              <h2 className="text-4xl font-extrabold text-gray-900 dark:text-white mb-4">Highly Rated NGOs</h2>
-              <p className="text-xl text-gray-500 dark:text-gray-400">Partnering only with verified organizations to ensure your donations make the maximum impact.</p>
-            </div>
-            <Link to="/register" className="inline-flex items-center gap-2 font-bold text-brand-600 dark:text-brand-500 hover:text-brand-700 dark:hover:text-brand-400 transition-colors group">
-              Register as an NGO <motion.div whileHover={{ x: 5 }}><ChevronRight className="w-5 h-5" /></motion.div>
-            </Link>
-          </motion.div>
+      {/* Nutshell Section (White Fill) */}
+      <section className="min-h-screen flex flex-col justify-center bg-white/5 backdrop-blur-lg py-20 px-4 sm:px-6 lg:px-8 border-b border-white/10 text-white">
+        <div className="max-w-7xl mx-auto w-full flex flex-col lg:flex-row gap-16 items-center">
+          <div className="flex-1">
+            <h6 className="font-black uppercase tracking-widest mb-4 drop-shadow-md text-transparent bg-clip-text bg-gradient-to-r from-brand-400 via-teal-300 to-brand-400 bg-[length:200%_auto] bg-[position:left_center] hover:bg-[position:right_center] transition-all duration-1000 ease-out cursor-default">KindLink in a nutshell</h6>
+            <p className="text-2xl md:text-3xl font-medium leading-relaxed mb-10 text-white/90 hover:text-white transition-colors duration-500 cursor-default">
+              KindLink is a platform designed to end wasteful surplus by connecting it directly to those in need. 
+              <br/><br/>
+              Through our interactive dashboard, we deliver a seamless intervention for vulnerable communities. The community-powered model relies on mobilizing passionate individuals to ensure scalable donating that helps communities break the cycle of poverty permanently.
+            </p>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="inline-block relative z-20">
+              <Link 
+                to="/future-plans"
+                className="inline-block bg-white/10 text-white font-black uppercase tracking-widest py-4 px-10 rounded-full hover:bg-white/20 transition-all border border-white/30 backdrop-blur-sm shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.2)]"
+              >
+                Our Future Plans
+              </Link>
+            </motion.div>
+          </div>
+          <div className="flex-1 w-full h-[500px] bg-black/50 rounded-3xl overflow-hidden border border-white/20 relative shadow-2xl backdrop-blur-sm group">
+            <img src="/images/helping_nutshell.jpg" alt="Volunteers handing out donations" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+            <div className="absolute inset-0 bg-brand-500/10 group-hover:bg-brand-500/0 transition-colors duration-500"></div>
+          </div>
+        </div>
+      </section>
 
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.1 }}
-            variants={staggerContainer}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-          >
+      {/* Quote Section (Beige/Yellow Fill) */}
+      <section className="min-h-screen flex flex-col justify-center bg-brand-950/30 backdrop-blur-md py-20 px-4 sm:px-6 lg:px-8 border-b border-white/10">
+        <div className="max-w-5xl mx-auto w-full text-center">
+          <div className="text-6xl text-brand-500 mb-8 opacity-50 drop-shadow-lg">"</div>
+          <h2 className="text-3xl md:text-5xl font-black leading-tight drop-shadow-md text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-300 to-white hover:from-yellow-200 hover:via-brand-200 hover:to-brand-400 bg-[length:200%_auto] bg-[position:left_center] hover:bg-[position:right_center] transition-all duration-1000 ease-out cursor-default">
+            We imagine a future where no resource goes to waste simply because the right connection wasn't made. A future where every community has a strong support network they need to thrive.
+          </h2>
+          <div className="mt-12 text-xl font-bold text-brand-300 uppercase tracking-widest drop-shadow-sm">
+            - The KindLink Team
+          </div>
+        </div>
+      </section>
+
+      {/* Verified NGOs (Grid styled like the dark theme) */}
+      <section className="min-h-screen flex flex-col justify-center bg-black/40 py-20 px-4 sm:px-6 lg:px-8 border-b border-white/10 text-white relative z-10">
+        <div className="max-w-7xl mx-auto w-full">
+          <h1 className="text-4xl md:text-6xl font-black tracking-tight mb-16 text-center drop-shadow-2xl uppercase">
+            Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 via-teal-300 to-brand-400 hover:from-purple-400 hover:via-pink-400 hover:to-purple-400 bg-[length:200%_auto] bg-[position:left_center] hover:bg-[position:right_center] transition-all duration-1000 ease-out cursor-default">NGO Partners</span>
+          </h1>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {verifiedNgos.map((ngo, idx) => (
-              <motion.div 
-                key={idx} 
-                variants={fadeInUp}
-                whileHover={{ y: -10, boxShadow: "0 25px 50px -12px rgba(34, 197, 94, 0.1)" }}
-                className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 transition-all duration-300 group cursor-default relative overflow-hidden shadow-sm dark:shadow-none flex flex-col"
+              <div key={idx} className="flex flex-col group cursor-pointer bg-gray-900/40 p-6 rounded-[24px] border border-white/5 hover:border-brand-500/30 transition-all duration-300 hover:shadow-[0_0_30px_rgba(16,185,129,0.15)] hover:-translate-y-2 backdrop-blur-xl">
+                <div className="w-full aspect-square rounded-xl overflow-hidden mb-5 relative shadow-lg">
+                  <img src={ngo.image} alt={ngo.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                  <div className="absolute inset-0 bg-brand-500/0 group-hover:bg-brand-500/20 transition-colors duration-500">
+                  </div>
+                </div>
+                <h3 className="text-xl font-black mb-1 text-white group-hover:text-brand-300 transition-colors">{ngo.name}</h3>
+                <h6 className="text-xs font-bold text-gray-400 uppercase tracking-widest">{ngo.role}</h6>
+              </div>
+            ))}
+          </div>
+          <div className="mt-20 text-center">
+             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="inline-block relative z-20">
+               <Link 
+                to="/register"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-gray-800 to-black backdrop-blur-md text-white font-bold uppercase tracking-widest py-4 px-10 rounded-full hover:from-gray-700 hover:to-gray-900 transition-all border border-white/20 hover:border-brand-500/50 shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:shadow-[0_0_30px_rgba(16,185,129,0.3)]"
               >
-                <div className="h-40 w-full overflow-hidden relative">
-                  <img src={ngo.image} alt={ngo.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-gray-900/60 to-transparent" />
-                  <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Award className="w-6 h-6 text-yellow-400 drop-shadow-md" />
-                  </div>
-                  <div className="absolute bottom-3 left-4">
-                    <span className="px-2.5 py-1 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md text-brand-600 dark:text-brand-400 text-xs font-bold rounded-lg shadow-sm">
-                      {ngo.category}
-                    </span>
-                  </div>
-                </div>
-                <div className="p-6 flex-1 flex flex-col">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 leading-tight">{ngo.name}</h3>
-                  <div className="flex items-center gap-1 mb-4">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className={`w-4 h-4 ${i < Math.floor(ngo.rating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300 dark:text-gray-600'}`} />
-                    ))}
-                    <span className="text-sm font-bold text-gray-900 dark:text-white ml-1">{ngo.rating}</span>
-                    <span className="text-sm text-gray-400">({ngo.reviews})</span>
-                  </div>
-                  <div className="pt-4 mt-auto border-t border-gray-50 dark:border-gray-700">
-                    <p className="text-sm font-medium text-brand-600 dark:text-brand-400">{ngo.impact}</p>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
+                Register your NGO <Award className="w-5 h-5 text-brand-400" />
+              </Link>
+            </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* How it Works Section */}
-      <section className="py-24 bg-white dark:bg-gray-950 overflow-hidden transition-colors" id="how-it-works">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeInUp}
-            className="text-center max-w-3xl mx-auto mb-20"
-          >
-            <h2 className="text-4xl font-extrabold text-gray-900 dark:text-white mb-6">A Professional Process</h2>
-            <p className="text-xl text-gray-500 dark:text-gray-400">From scheduling to verification, KindLink provides a seamless experience for both Donators and NGOs.</p>
-          </motion.div>
-          
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.3 }}
-            variants={staggerContainer}
-            className="grid grid-cols-1 md:grid-cols-3 gap-12 relative"
-          >
-            {/* Connecting lines for desktop */}
-            <div className="hidden md:block absolute top-12 left-[16.666%] right-[16.666%] h-0.5 bg-gradient-to-r from-brand-100 dark:from-gray-800 via-brand-200 dark:via-brand-900 to-brand-100 dark:to-gray-800 z-0"></div>
+      {/* Interactive Helping Section embedded here to keep previous work */}
+      <div className="border-t border-white/10">
+         <InteractiveHelpingSection />
+      </div>
 
-            {[
-              { icon: <CalendarCheck className="w-10 h-10 text-brand-500" />, title: "1. Schedule", desc: "Select a trusted NGO, choose your items, and easily pick a date, time, and location using our interactive map." },
-              { icon: <Clock className="w-10 h-10 text-brand-500" />, title: "2. Real-time Status", desc: "Your donation immediately appears on the NGO's incoming dashboard with all necessary contact details." },
-              { icon: <ShieldCheck className="w-10 h-10 text-brand-500" />, title: "3. Verification", desc: "Upon receipt, the NGO clicks 'Verify' which instantly updates your status to 'Verified' across the platform." }
-            ].map((step, i) => (
-              <motion.div key={i} variants={fadeInUp} className="relative z-10 flex flex-col items-center text-center group">
-                <motion.div 
-                  whileHover={{ scale: 1.1, rotate: i % 2 === 0 ? 5 : -5 }}
-                  className="w-24 h-24 bg-white dark:bg-gray-900 rounded-3xl shadow-xl shadow-brand-500/10 dark:shadow-none border border-brand-50 dark:border-gray-800 flex items-center justify-center mb-8 transition-transform duration-300"
-                >
-                  {step.icon}
-                </motion.div>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{step.title}</h3>
-                <p className="text-gray-500 dark:text-gray-400 leading-relaxed">{step.desc}</p>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Roadmap / Future Enhancements */}
-      <section className="py-24 bg-gray-50 dark:bg-black relative overflow-hidden transition-colors" id="roadmap">
-        <motion.div 
-          animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-500/30 blur-[100px] rounded-full"
-        />
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <motion.div 
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="mb-16"
-          >
-            <h2 className="text-4xl font-extrabold text-gray-900 dark:text-white mb-4">Future Enhancements</h2>
-            <p className="text-xl text-gray-500 dark:text-gray-400 max-w-2xl">We are constantly evolving to make giving even more powerful.</p>
-          </motion.div>
-
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.1 }}
-            variants={staggerContainer}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-          >
-            {roadmap.map((item, idx) => (
-              <motion.div 
-                key={idx} 
-                variants={fadeInUp}
-                whileHover={{ y: -5 }}
-                className="bg-white dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200 dark:border-gray-700/50 rounded-3xl p-8 hover:shadow-lg dark:hover:bg-gray-800 transition-all"
-              >
-                <div className="flex justify-between items-start mb-6">
-                  <div className="w-12 h-12 bg-brand-50 dark:bg-gray-900 rounded-2xl flex items-center justify-center border border-brand-100 dark:border-gray-700">
-                    {item.icon}
-                  </div>
-                  <span className={`text-xs font-bold px-3 py-1 rounded-full ${item.status === 'Coming Soon' ? 'bg-brand-500/20 text-brand-700 dark:text-brand-400 border border-brand-500/30' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300'}`}>
-                    {item.status}
-                  </span>
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">{item.title}</h3>
-                <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">{item.desc}</p>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Footer CTA */}
-      <section className="py-24 bg-brand-600 dark:bg-brand-700 text-center relative overflow-hidden transition-colors">
-        <div className="absolute inset-0 bg-gradient-to-t from-brand-700 dark:from-brand-900 to-transparent"></div>
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="max-w-4xl mx-auto px-4 relative z-10"
-        >
-          <h2 className="text-4xl md:text-5xl font-black text-white mb-8 tracking-tight">Ready to make a real impact?</h2>
-          <p className="text-brand-100 mb-12 max-w-2xl mx-auto text-xl">
-            Join thousands of generous individuals and dedicated organizations working together to reduce waste and fight poverty.
-          </p>
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="inline-block">
-            <Link 
-              to="/dashboard"
-              className="inline-flex items-center justify-center gap-2 bg-gray-900 hover:bg-black dark:bg-white dark:hover:bg-gray-100 text-white dark:text-gray-900 font-black py-5 px-12 rounded-full transition-all shadow-2xl text-xl group"
-            >
-              Start Donating Now <motion.div whileHover={{ x: 5 }}><ArrowRight className="w-6 h-6" /></motion.div>
-            </Link>
-          </motion.div>
-        </motion.div>
-      </section>
     </PageTransition>
   );
 }
