@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Star, Award, Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -6,6 +6,8 @@ import PageTransition from '../components/PageTransition';
 import InteractiveHelpingSection from '../components/InteractiveHelpingSection';
 
 export default function Landing() {
+  const [hoveredNgo, setHoveredNgo] = useState(null);
+
   const verifiedNgos = [
     { name: "Food Rescue Foundation", role: "Food & Meals", image: "/images/ngo1.jpg" },
     { name: "Books for All", role: "Education", image: "/images/ngo2.jpg" },
@@ -115,17 +117,41 @@ export default function Landing() {
           <h1 className="text-4xl md:text-6xl font-black tracking-tight mb-16 text-center drop-shadow-2xl uppercase">
             Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 via-teal-300 to-brand-400 hover:from-purple-400 hover:via-pink-400 hover:to-purple-400 bg-[length:200%_auto] bg-[position:left_center] hover:bg-[position:right_center] transition-all duration-1000 ease-out cursor-default">NGO Partners</span>
           </h1>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 perspective-[1000px]">
             {verifiedNgos.map((ngo, idx) => (
-              <div key={idx} className="flex flex-col group cursor-pointer bg-gray-900/40 p-6 rounded-[24px] border border-white/5 hover:border-brand-500/30 transition-all duration-300 hover:shadow-[0_0_30px_rgba(16,185,129,0.15)] hover:-translate-y-2 backdrop-blur-xl">
-                <div className="w-full aspect-square rounded-xl overflow-hidden mb-5 relative shadow-lg">
-                  <img src={ngo.image} alt={ngo.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                  <div className="absolute inset-0 bg-brand-500/0 group-hover:bg-brand-500/20 transition-colors duration-500">
+              <motion.div
+                key={idx}
+                variants={{
+                  hidden: { opacity: 0, y: 30, rotateX: 20 },
+                  visible: { opacity: 1, y: 0, rotateX: 0, transition: { type: 'spring', stiffness: 100, damping: 15 } }
+                }}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.1 }}
+                onHoverStart={() => setHoveredNgo(idx)}
+                onHoverEnd={() => setHoveredNgo(null)}
+                className={`relative p-[2px] rounded-3xl overflow-visible cursor-pointer transition-all duration-500 
+                  ${hoveredNgo === idx ? 'scale-105 z-20' : 'scale-100 z-0'} 
+                  ${hoveredNgo !== null && hoveredNgo !== idx ? 'opacity-40 blur-[3px] scale-95' : 'opacity-100'}`}
+              >
+                {/* Glowing Shadow Background */}
+                <div className={`absolute inset-0 bg-gradient-to-r from-brand-500 to-teal-400 rounded-3xl blur-xl opacity-0 transition-opacity duration-300 ${hoveredNgo === idx ? 'opacity-70' : ''}`} />
+                
+                {/* Animated Border Gradient */}
+                <div className="absolute inset-0 bg-gradient-to-r from-brand-500 to-teal-400 opacity-30 rounded-3xl" />
+
+                <div className="relative bg-gray-900/80 backdrop-blur-2xl h-full w-full rounded-[22px] p-6 flex flex-col border border-white/10 overflow-hidden group">
+                  {/* Inner Shine Effect */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-gradient-to-tr from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full z-10" />
+                  
+                  <div className="w-full aspect-square rounded-xl overflow-hidden mb-5 relative shadow-lg">
+                    <img src={ngo.image} alt={ngo.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                    <div className="absolute inset-0 bg-brand-500/0 group-hover:bg-brand-500/30 transition-colors duration-500 mix-blend-overlay"></div>
                   </div>
+                  <h3 className="text-xl font-black mb-1 text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-brand-300 group-hover:to-teal-300 transition-all">{ngo.name}</h3>
+                  <h6 className="text-xs font-bold text-gray-400 uppercase tracking-widest">{ngo.role}</h6>
                 </div>
-                <h3 className="text-xl font-black mb-1 text-white group-hover:text-brand-300 transition-colors">{ngo.name}</h3>
-                <h6 className="text-xs font-bold text-gray-400 uppercase tracking-widest">{ngo.role}</h6>
-              </div>
+              </motion.div>
             ))}
           </div>
           <div className="mt-20 text-center">
