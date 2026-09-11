@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { LogOut, ImagePlus, Calendar, Clock, HeartHandshake, CheckCircle2, ChevronDown, MapPin, User, Building2, Phone, TrendingUp, Quote, X, Trash2, Star } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -41,10 +41,15 @@ export default function Dashboard() {
       {/* Header */}
       <header className="bg-gradient-to-r from-brand-50/80 via-white/80 to-teal-50/80 dark:from-brand-950/80 dark:via-gray-950/80 dark:to-teal-950/80 backdrop-blur-md border-b border-brand-100 dark:border-brand-900 sticky top-0 z-10 transition-all duration-300 hover:shadow-md hover:shadow-brand-500/10 hover:border-brand-300 dark:hover:border-brand-700">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <HeartHandshake className="w-8 h-8 text-brand-500" />
+          <Link to="/" className="flex items-center gap-2 group cursor-pointer">
+            <motion.div 
+              whileHover={{ rotate: 12, scale: 1.1 }}
+              className="bg-brand-50 p-2 rounded-xl transition-transform duration-300 text-brand-600 dark:bg-brand-500/20 dark:text-brand-400 group-hover:bg-brand-100 dark:group-hover:bg-brand-500/30"
+            >
+              <HeartHandshake className="w-6 h-6" />
+            </motion.div>
             <span className="text-xl font-bold text-gray-900 dark:text-white tracking-tight">KindLink</span>
-          </div>
+          </Link>
           <div className="flex items-center gap-4">
             <ThemeToggle />
             <div className="text-sm hidden sm:block">

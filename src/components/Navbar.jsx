@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, HeartHandshake } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user } = useAuth();
   
   const links = [
     { name: 'ABOUT KINDLINK', path: '/' },
@@ -42,10 +44,18 @@ export default function Navbar() {
 
         {/* Right Actions & Mobile Toggle */}
         <div className="flex items-center gap-3 sm:gap-4">
-          <Link to="/login" className="text-sm font-bold text-white/80 hover:text-white transition-colors hidden sm:block uppercase tracking-wider drop-shadow-sm">Log in</Link>
-          <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.95 }}>
-            <Link to="/register" onClick={closeMenu} className="text-xs sm:text-sm font-bold uppercase tracking-wider bg-brand-500 text-white hover:bg-brand-600 px-4 sm:px-6 py-2 sm:py-2.5 rounded-full shadow-[0_0_15px_rgba(16,185,129,0.4)] hover:shadow-[0_0_20px_rgba(16,185,129,0.6)] transition-all">Volunteer</Link>
-          </motion.div>
+          {user ? (
+            <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.95 }}>
+              <Link to="/dashboard" onClick={closeMenu} className="text-xs sm:text-sm font-bold uppercase tracking-wider bg-brand-500 text-white hover:bg-brand-600 px-4 sm:px-6 py-2 sm:py-2.5 rounded-full shadow-[0_0_15px_rgba(16,185,129,0.4)] hover:shadow-[0_0_20px_rgba(16,185,129,0.6)] transition-all">Dashboard</Link>
+            </motion.div>
+          ) : (
+            <>
+              <Link to="/login" className="text-sm font-bold text-white/80 hover:text-white transition-colors hidden sm:block uppercase tracking-wider drop-shadow-sm">Log in</Link>
+              <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.95 }}>
+                <Link to="/register" onClick={closeMenu} className="text-xs sm:text-sm font-bold uppercase tracking-wider bg-brand-500 text-white hover:bg-brand-600 px-4 sm:px-6 py-2 sm:py-2.5 rounded-full shadow-[0_0_15px_rgba(16,185,129,0.4)] hover:shadow-[0_0_20px_rgba(16,185,129,0.6)] transition-all">Volunteer</Link>
+              </motion.div>
+            </>
+          )}
           
           <button 
             className="md:hidden p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors ml-1"
@@ -76,13 +86,15 @@ export default function Navbar() {
                   {link.name}
                 </Link>
               ))}
-              <Link 
-                to="/login"
-                onClick={closeMenu}
-                className="text-sm font-bold uppercase tracking-wider block p-3 rounded-xl text-white/70 hover:bg-white/5 hover:text-white sm:hidden"
-              >
-                Log in
-              </Link>
+              {!user && (
+                <Link 
+                  to="/login"
+                  onClick={closeMenu}
+                  className="text-sm font-bold uppercase tracking-wider block p-3 rounded-xl text-white/70 hover:bg-white/5 hover:text-white sm:hidden"
+                >
+                  Log in
+                </Link>
+              )}
             </div>
           </motion.div>
         )}
