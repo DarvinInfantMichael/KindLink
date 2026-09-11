@@ -97,11 +97,11 @@ export default function Register() {
             onClick={() => setRole('donator')}
             className={`flex-1 py-3 px-4 rounded-xl border-2 flex flex-col items-center gap-2 transition-all duration-200 ${
               role === 'donator' 
-                ? 'border-brand-500 bg-brand-50 text-brand-700 dark:bg-brand-500/20 dark:text-brand-400' 
-                : 'border-gray-200 hover:border-brand-200 text-gray-500 dark:border-gray-700 dark:hover:border-brand-500/50 dark:text-gray-400'
+                ? 'border-emerald-500 bg-emerald-500 text-white dark:border-emerald-600 dark:bg-emerald-600 shadow-md shadow-emerald-500/30' 
+                : 'border-gray-200 hover:border-emerald-200 text-gray-500 dark:border-gray-700 dark:hover:border-emerald-500/50 dark:text-gray-400'
             }`}
           >
-            <Heart className={role === 'donator' ? 'text-brand-500' : 'text-gray-400'} />
+            <Heart className={role === 'donator' ? 'text-white' : 'text-gray-400'} />
             <span className="font-medium">I want to Donate</span>
           </motion.button>
           
@@ -111,11 +111,11 @@ export default function Register() {
             onClick={() => setRole('receiver')}
             className={`flex-1 py-3 px-4 rounded-xl border-2 flex flex-col items-center gap-2 transition-all duration-200 ${
               role === 'receiver' 
-                ? 'border-brand-500 bg-brand-50 text-brand-700 dark:bg-brand-500/20 dark:text-brand-400' 
-                : 'border-gray-200 hover:border-brand-200 text-gray-500 dark:border-gray-700 dark:hover:border-brand-500/50 dark:text-gray-400'
+                ? 'border-emerald-500 bg-emerald-500 text-white dark:border-emerald-600 dark:bg-emerald-600 shadow-md shadow-emerald-500/30' 
+                : 'border-gray-200 hover:border-emerald-200 text-gray-500 dark:border-gray-700 dark:hover:border-emerald-500/50 dark:text-gray-400'
             }`}
           >
-            <Building2 className={role === 'receiver' ? 'text-brand-500' : 'text-gray-400'} />
+            <Building2 className={role === 'receiver' ? 'text-white' : 'text-gray-400'} />
             <span className="font-medium">I am an NGO</span>
           </motion.button>
         </div>

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, ImagePlus, Calendar, Clock, HeartHandshake, CheckCircle2, ChevronDown, MapPin, User, Building2, Phone, TrendingUp, Quote, X, Trash2, Star } from 'lucide-react';
+import { LogOut, ImagePlus, Calendar, Clock, HeartHandshake, CheckCircle2, ChevronDown, MapPin, User, Building2, Phone, TrendingUp, Quote, X, Trash2, Star, Utensils, Sofa, Shirt, BookOpen, Package, UploadCloud } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
@@ -40,7 +40,7 @@ export default function Dashboard() {
     <PageTransition className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 dark:from-emerald-950/20 dark:to-gray-950 flex flex-col transition-colors duration-300">
       {/* Header */}
       <header className="bg-gradient-to-r from-brand-50/80 via-white/80 to-teal-50/80 dark:from-brand-950/80 dark:via-gray-950/80 dark:to-teal-950/80 backdrop-blur-md border-b border-brand-100 dark:border-brand-900 sticky top-0 z-10 transition-all duration-300 hover:shadow-md hover:shadow-brand-500/10 hover:border-brand-300 dark:hover:border-brand-700">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between relative">
           <Link to="/" className="flex items-center gap-2 group cursor-pointer">
             <motion.div 
               whileHover={{ rotate: 12, scale: 1.1 }}
@@ -50,6 +50,12 @@ export default function Dashboard() {
             </motion.div>
             <span className="text-xl font-bold text-gray-900 dark:text-white tracking-tight">KindLink</span>
           </Link>
+          
+          <div className="hidden md:flex items-center gap-8 absolute left-1/2 transform -translate-x-1/2">
+            <Link to="/" className="text-sm font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Home</Link>
+            <Link to="/future-plans" className="text-sm font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Future Plans</Link>
+          </div>
+
           <div className="flex items-center gap-4">
             <ThemeToggle />
             <div className="text-sm hidden sm:block">
@@ -331,7 +337,13 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
     }, 1000);
   };
 
-  const categories = ['Food', 'Furniture', 'Clothes', 'Books', 'Other'];
+  const categories = [
+    { id: 'Food', icon: Utensils, color: 'text-orange-500', bg: 'bg-orange-50 dark:bg-orange-500/10', activeBg: 'bg-orange-100 dark:bg-orange-500/20', hoverClass: 'hover:bg-orange-50 dark:hover:bg-orange-500/10 hover:border-orange-300 dark:hover:border-orange-500/50' },
+    { id: 'Furniture', icon: Sofa, color: 'text-purple-500', bg: 'bg-purple-50 dark:bg-purple-500/10', activeBg: 'bg-purple-100 dark:bg-purple-500/20', hoverClass: 'hover:bg-purple-50 dark:hover:bg-purple-500/10 hover:border-purple-300 dark:hover:border-purple-500/50' },
+    { id: 'Clothes', icon: Shirt, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-500/10', activeBg: 'bg-blue-100 dark:bg-blue-500/20', hoverClass: 'hover:bg-blue-50 dark:hover:bg-blue-500/10 hover:border-blue-300 dark:hover:border-blue-500/50' },
+    { id: 'Books', icon: BookOpen, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-500/10', activeBg: 'bg-emerald-100 dark:bg-emerald-500/20', hoverClass: 'hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:border-emerald-300 dark:hover:border-emerald-500/50' },
+    { id: 'Other', icon: Package, color: 'text-gray-500 dark:text-gray-400', bg: 'bg-gray-50 dark:bg-gray-800', activeBg: 'bg-gray-100 dark:bg-gray-700', hoverClass: 'hover:bg-gray-50 dark:hover:bg-gray-800/80 hover:border-gray-300 dark:hover:border-gray-600' },
+  ];
 
   const staggerList = {
     hidden: { opacity: 0 },
@@ -419,12 +431,15 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
           </motion.div>
         ) : (
           <motion.div key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">Make a Donation</h2>
-              <p className="text-gray-500 dark:text-gray-400 text-sm">Fill out the details below to schedule your pickup/drop-off.</p>
+            <div className="mb-10 flex flex-col items-center text-center">
+              <div className="w-16 h-16 bg-brand-50 dark:bg-brand-500/10 rounded-2xl flex items-center justify-center mb-4 shadow-sm border border-brand-100 dark:border-brand-500/20">
+                <HeartHandshake className="w-8 h-8 text-brand-600 dark:text-brand-400" />
+              </div>
+              <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-2 tracking-tight">Make a Donation</h2>
+              <p className="text-gray-500 dark:text-gray-400 text-sm max-w-md">Your generosity can change lives. Fill out the details below to schedule your pickup or drop-off.</p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-8">
               {/* NGO Selection */}
               <div className="group">
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5 group-focus-within:text-brand-600 dark:group-focus-within:text-brand-400 transition-colors">Select Organization</label>
@@ -450,22 +465,32 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
               {/* Category */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">What are you donating?</label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {categories.map((cat) => (
-                    <motion.button
-                      whileTap={{ scale: 0.95 }}
-                      key={cat}
-                      type="button"
-                      onClick={() => setCategory(cat)}
-                      className={`py-3 px-4 rounded-xl border transition-all text-sm font-semibold shadow-sm ${
-                        category === cat 
-                          ? 'border-brand-500 bg-brand-50 text-brand-700 dark:border-brand-500 dark:bg-brand-500/20 dark:text-brand-400 ring-1 ring-brand-500' 
-                          : 'border-gray-200 bg-white text-gray-600 hover:border-brand-400 hover:bg-brand-50 hover:text-brand-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-brand-500/80 dark:hover:bg-brand-500/20 dark:hover:text-brand-300'
-                      }`}
-                    >
-                      {cat}
-                    </motion.button>
-                  ))}
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                  {categories.map((cat) => {
+                    const Icon = cat.icon;
+                    const isActive = category === cat.id;
+                    return (
+                      <motion.button
+                        whileTap={{ scale: 0.95 }}
+                        whileHover={{ y: -2 }}
+                        key={cat.id}
+                        type="button"
+                        onClick={() => setCategory(cat.id)}
+                        className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all duration-300 ${
+                          isActive 
+                            ? `border-brand-500 shadow-md ${cat.activeBg}` 
+                            : `border-transparent bg-white dark:bg-gray-800 hover:shadow-sm border-gray-100 dark:border-gray-700/50 ${cat.hoverClass}`
+                        }`}
+                      >
+                        <div className={`p-3 rounded-full mb-2 transition-transform duration-300 ${isActive ? 'scale-110 shadow-sm' : ''} ${cat.bg} ${cat.color}`}>
+                          <Icon className="w-6 h-6" />
+                        </div>
+                        <span className={`text-sm font-bold ${isActive ? 'text-brand-700 dark:text-brand-400' : 'text-gray-600 dark:text-gray-300'}`}>
+                          {cat.id}
+                        </span>
+                      </motion.button>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -494,15 +519,15 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
               </AnimatePresence>
 
               {/* Image Upload */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Upload Image</label>
+              <div className="group">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 group-focus-within:text-brand-600 dark:group-focus-within:text-brand-400 transition-colors">Upload Image</label>
                 <motion.div 
                   whileHover={{ scale: 1.01 }}
                   onClick={() => fileInputRef.current?.click()}
-                  className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all ${
+                  className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all duration-300 ${
                     imagePreview 
-                      ? 'border-brand-500 bg-brand-50/50 dark:bg-brand-500/10' 
-                      : 'border-gray-300 hover:border-brand-400 hover:bg-gray-50 dark:border-gray-700 dark:hover:border-brand-500 dark:hover:bg-gray-800'
+                      ? 'border-brand-500 bg-brand-50/50 dark:bg-brand-500/10 shadow-sm' 
+                      : 'border-gray-300 bg-gray-50/50 dark:bg-gray-800/50 hover:border-brand-400 hover:bg-brand-50 dark:border-gray-700 dark:hover:border-brand-500 dark:hover:bg-brand-500/10 shadow-sm'
                   }`}
                 >
                   <input
@@ -519,12 +544,12 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0 }}
-                        className="relative w-full aspect-video rounded-lg overflow-hidden shadow-sm"
+                        className="relative w-full aspect-video rounded-lg overflow-hidden shadow-md group/preview"
                       >
-                        <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
-                          <span className="text-white font-medium flex items-center gap-2">
-                            <ImagePlus className="w-5 h-5" /> Change Image
+                        <img src={imagePreview} alt="Preview" className="w-full h-full object-cover group-hover/preview:scale-105 transition-transform duration-500" />
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/preview:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
+                          <span className="text-white font-bold flex flex-col items-center gap-2">
+                            <UploadCloud className="w-8 h-8 animate-bounce" /> Change Image
                           </span>
                         </div>
                       </motion.div>
@@ -534,13 +559,13 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400"
+                        className="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors"
                       >
-                        <div className="w-12 h-12 bg-gray-100 dark:bg-gray-900 rounded-full flex items-center justify-center mb-3">
-                          <ImagePlus className="w-6 h-6 text-gray-400" />
+                        <div className="w-16 h-16 bg-white dark:bg-gray-900 rounded-full flex items-center justify-center mb-4 shadow-sm border border-gray-100 dark:border-gray-800 group-hover:border-brand-200 dark:group-hover:border-brand-500/30 group-hover:bg-brand-50 dark:group-hover:bg-brand-500/20 transition-colors">
+                          <UploadCloud className="w-8 h-8 text-gray-400 group-hover:text-brand-500 transition-colors" />
                         </div>
-                        <span className="font-medium text-gray-700 dark:text-gray-300 mb-1">Click to upload a photo</span>
-                        <span className="text-xs">PNG, JPG up to 5MB</span>
+                        <span className="font-bold text-gray-700 dark:text-gray-300 mb-1 group-hover:text-brand-700 dark:group-hover:text-brand-400 transition-colors">Click to upload a photo</span>
+                        <span className="text-xs font-medium text-gray-500">PNG, JPG up to 5MB</span>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -608,7 +633,7 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
                     type="button"
                     onClick={handleSearchLocation}
                     disabled={isSearchingAddress || !searchAddress.trim()}
-                    className="px-6 py-3 bg-brand-100 dark:bg-brand-500/20 text-brand-700 dark:text-brand-400 font-bold rounded-xl hover:bg-brand-200 dark:hover:bg-brand-500/30 transition-colors disabled:opacity-50 shadow-sm"
+                    className="px-6 py-3 bg-gradient-to-r from-gray-900 to-emerald-950 hover:from-black hover:to-emerald-900 border border-emerald-800/50 hover:border-emerald-600/50 text-emerald-400 hover:text-emerald-300 font-bold rounded-xl transition-all disabled:opacity-80 shadow-md shadow-emerald-900/20"
                   >
                     {isSearchingAddress ? 'Searching...' : 'Search'}
                   </button>
@@ -630,30 +655,30 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
                 </div>
               </div>
 
-              <div className="pt-4 flex items-center gap-3 border-t border-gray-100 dark:border-gray-800">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedNgo('');
-                    setCategory('');
-                    setCustomCategory('');
-                    setImagePreview(null);
-                    setDateSlot('');
-                    setTimeSlot('');
-                    setSearchAddress('');
-                  }}
-                  className="px-5 py-3.5 text-sm font-bold text-gray-600 dark:text-gray-300 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-xl transition-colors w-1/3 text-center"
-                >
-                  Clear Form
-                </button>
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  type="submit"
-                  disabled={isSubmitting || !selectedNgo || !category || (category==='Other' && !customCategory) || !dateSlot || !timeSlot}
-                  className="w-2/3 bg-brand-600 hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-3.5 rounded-xl transition-all shadow-lg shadow-brand-500/30"
-                >
-                  {isSubmitting ? 'Scheduling...' : 'Schedule Donation'}
+              <div className="pt-6 flex flex-col-reverse sm:flex-row items-center gap-4 border-t border-gray-100 dark:border-gray-800">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedNgo('');
+                      setCategory('');
+                      setCustomCategory('');
+                      setImagePreview(null);
+                      setDateSlot('');
+                      setTimeSlot('');
+                      setSearchAddress('');
+                    }}
+                    className="px-6 py-4 text-sm font-bold text-gray-400 hover:text-gray-200 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-700 hover:to-gray-800 border border-gray-700 rounded-xl transition-all w-full sm:w-auto text-center shadow-md"
+                  >
+                    Clear Form
+                  </button>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    type="submit"
+                    disabled={isSubmitting || !selectedNgo || !category || (category==='Other' && !customCategory) || !dateSlot || !timeSlot}
+                    className="flex-1 w-full bg-gradient-to-r from-gray-900 via-emerald-950 to-black hover:from-gray-800 hover:via-emerald-900 hover:to-gray-900 border border-emerald-800/50 hover:border-emerald-500/50 disabled:opacity-90 disabled:saturate-50 disabled:cursor-not-allowed text-emerald-400 hover:text-emerald-300 font-bold text-lg py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(4,120,87,0.3)] hover:shadow-[0_0_30px_rgba(4,120,87,0.5)] flex items-center justify-center gap-2"
+                  >
+                  {isSubmitting ? 'Scheduling...' : <>Schedule Donation <CheckCircle2 className="w-5 h-5" /></>}
                 </motion.button>
               </div>
             </form>
@@ -667,7 +692,7 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
           <h3 className="text-xl font-bold text-gray-900 dark:text-white">Donated Items to NGOs</h3>
           <button 
             onClick={() => setShowHistory(!showHistory)}
-            className="px-4 py-2 bg-brand-100 dark:bg-brand-500/20 text-brand-700 dark:text-brand-400 rounded-xl text-sm font-bold transition-colors hover:bg-brand-200 dark:hover:bg-brand-500/30"
+            className="px-5 py-2.5 bg-gradient-to-r from-gray-900 to-emerald-950 hover:from-black hover:to-emerald-900 border border-emerald-800/50 hover:border-emerald-600/50 text-emerald-400 hover:text-emerald-300 rounded-xl text-sm font-bold transition-all shadow-md shadow-emerald-900/20"
           >
             {showHistory ? 'Hide History' : 'View History'}
           </button>
