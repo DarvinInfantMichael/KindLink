@@ -37,36 +37,36 @@ export default function Dashboard() {
   };
 
   return (
-    <PageTransition className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 dark:from-emerald-950/20 dark:to-gray-950 flex flex-col transition-colors duration-300">
+    <PageTransition className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 dark:from-transparent dark:to-transparent dark:bg-transparent flex flex-col transition-colors duration-300">
       {/* Header */}
-      <header className="bg-gradient-to-r from-brand-50/80 via-white/80 to-teal-50/80 dark:from-brand-950/80 dark:via-gray-950/80 dark:to-teal-950/80 backdrop-blur-md border-b border-brand-100 dark:border-brand-900 sticky top-0 z-10 transition-all duration-300 hover:shadow-md hover:shadow-brand-500/10 hover:border-brand-300 dark:hover:border-brand-700">
+      <header className="bg-gradient-to-r from-brand-50/80 via-white/80 to-teal-50/80 dark:bg-none dark:bg-black/40 backdrop-blur-xl border-b border-brand-100 dark:border-white/5 sticky top-0 z-10 transition-all duration-300 hover:shadow-md hover:shadow-brand-500/10 hover:border-brand-300 dark:hover:border-fuchsia-500/40">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between relative">
           <Link to="/" className="flex items-center gap-2 group cursor-pointer">
             <motion.div 
               whileHover={{ rotate: 12, scale: 1.1 }}
-              className="bg-brand-50 p-2 rounded-xl transition-transform duration-300 text-brand-600 dark:bg-brand-500/20 dark:text-brand-400 group-hover:bg-brand-100 dark:group-hover:bg-brand-500/30"
+              className="bg-brand-50 p-2 rounded-xl transition-transform duration-300 text-brand-600 dark:bg-gradient-to-br dark:from-purple-500 dark:to-fuchsia-500 dark:text-white dark:shadow-[0_0_15px_rgba(217,70,239,0.5)] dark:group-hover:shadow-[0_0_25px_rgba(217,70,239,0.7)] group-hover:bg-brand-100"
             >
               <HeartHandshake className="w-6 h-6" />
             </motion.div>
-            <span className="text-xl font-bold text-gray-900 dark:text-white tracking-tight">KindLink</span>
+            <span className="text-xl font-bold text-gray-900 dark:text-white hover:text-fuchsia-300 dark:hover:text-fuchsia-300 tracking-tight dark:group-hover:to-fuchsia-200 transition-colors">KindLink</span>
           </Link>
           
           <div className="hidden md:flex items-center gap-8 absolute left-1/2 transform -translate-x-1/2">
-            <Link to="/" className="text-sm font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Home</Link>
-            <Link to="/future-plans" className="text-sm font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Future Plans</Link>
+            <Link to="/" className="text-sm font-bold uppercase tracking-wider text-gray-600 dark:text-white/70 hover:text-brand-600 dark:hover:text-transparent dark:hover:bg-clip-text dark:hover:bg-gradient-to-r dark:hover:from-purple-300 dark:hover:to-fuchsia-300 transition-colors">Home</Link>
+            <Link to="/future-plans" className="text-sm font-bold uppercase tracking-wider text-gray-600 dark:text-white/70 hover:text-brand-600 dark:hover:text-transparent dark:hover:bg-clip-text dark:hover:bg-gradient-to-r dark:hover:from-purple-300 dark:hover:to-fuchsia-300 transition-colors">Future Plans</Link>
           </div>
 
           <div className="flex items-center gap-4">
             <ThemeToggle />
             <div className="text-sm hidden sm:block">
-              <span className="text-gray-500 dark:text-gray-400">Welcome, </span>
+              <span className="text-gray-500 dark:text-white/80">Welcome, </span>
               <span className="font-semibold text-gray-900 dark:text-white">{user?.name}</span>
             </div>
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={handleLogout}
-              className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors"
+              className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-fuchsia-900/30 dark:hover:text-fuchsia-400 rounded-lg transition-colors"
               title="Logout"
             >
               <LogOut className="w-5 h-5" />
@@ -76,7 +76,10 @@ export default function Dashboard() {
       </header>
 
       <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-2xl rounded-[2.5rem] shadow-2xl p-6 sm:p-10 border border-white/50 dark:border-gray-800/50 min-h-[80vh]">
+        <div className="glass rounded-[2.5rem] p-6 sm:p-10 min-h-[80vh] relative overflow-hidden">
+          {/* Subtle glow orb behind dashboard */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-brand-500/10 dark:bg-fuchsia-600/20 blur-[100px] rounded-full pointer-events-none -mr-20 -mt-20"></div>
+          
           <AnimatePresence mode="wait">
             {user?.role === 'donator' ? (
               <DonatorDashboard key="donator" ngos={ngos} addDonation={addDonation} currentUser={user} donations={donations} removeDonation={removeDonation} />
@@ -113,12 +116,12 @@ function UpcomingActivitiesView({ activities, title, subtitle, isNgo, onAdd, onD
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{title}</h2>
-          <p className="text-gray-500 dark:text-gray-400 text-sm">{subtitle}</p>
+          <p className="text-gray-500 dark:text-white/80 text-sm">{subtitle}</p>
         </div>
         {isNgo && (
           <button 
             onClick={onAdd}
-            className="px-4 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl font-medium text-sm shadow-sm border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            className="px-4 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-white/90 rounded-xl font-medium text-sm shadow-sm border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           >
             + New Activity
           </button>
@@ -147,7 +150,7 @@ function UpcomingActivitiesView({ activities, title, subtitle, isNgo, onAdd, onD
                     <Calendar className="w-5 h-5" />
                   </div>
                   <div className="flex items-center gap-2 text-right">
-                    <span className="text-xs font-bold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-2.5 py-1 rounded-md">
+                    <span className="text-xs font-bold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-white/90 px-2.5 py-1 rounded-md">
                       {activity.participants || 0} Registered
                     </span>
                     {isNgo && (
@@ -168,7 +171,7 @@ function UpcomingActivitiesView({ activities, title, subtitle, isNgo, onAdd, onD
                    {activity.date}
                 </p>
                 
-                <div className="space-y-2.5 text-sm text-gray-600 dark:text-gray-400 border-t border-gray-100 dark:border-gray-800 pt-4 mt-auto">
+                <div className="space-y-2.5 text-sm text-gray-600 dark:text-white/80 border-t border-gray-100 dark:border-gray-800 pt-4 mt-auto">
                   <div className="flex items-center gap-2.5">
                     <Clock className="w-4 h-4 text-gray-400" />
                     <span>{activity.time || '10:00 AM - 2:00 PM'}</span>
@@ -196,13 +199,13 @@ function UpcomingActivitiesView({ activities, title, subtitle, isNgo, onAdd, onD
                         {!registered[activity.id].reminder && (
                           <button 
                             onClick={(e) => { e.stopPropagation(); handleSetReminder(activity.id); }}
-                            className="w-full py-2 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:border-brand-300 dark:hover:border-brand-700 hover:text-brand-600 dark:hover:text-brand-400 rounded-xl text-xs font-medium transition-colors shadow-sm"
+                            className="w-full py-2 bg-white dark:bg-gray-800 text-gray-600 dark:text-white/90 border border-gray-200 dark:border-gray-700 hover:border-brand-300 dark:hover:border-brand-700 hover:text-brand-600 dark:hover:text-brand-400 rounded-xl text-xs font-medium transition-colors shadow-sm"
                           >
                             Set Reminder (1 Day Before)
                           </button>
                         )}
                         {registered[activity.id].reminder && (
-                          <div className="text-xs text-center text-gray-500 dark:text-gray-400 mt-1 flex items-center justify-center gap-1">
+                          <div className="text-xs text-center text-gray-500 dark:text-white/80 mt-1 flex items-center justify-center gap-1">
                             <Clock className="w-3 h-3" /> Reminder set for 1 day before
                           </div>
                         )}
@@ -343,7 +346,7 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
     { id: 'Furniture', icon: Sofa, color: 'text-purple-500', bg: 'bg-purple-50 dark:bg-purple-500/10', activeBg: 'bg-purple-100 dark:bg-purple-500/20', hoverClass: 'hover:bg-purple-50 dark:hover:bg-purple-500/10 hover:border-purple-300 dark:hover:border-purple-500/50' },
     { id: 'Clothes', icon: Shirt, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-500/10', activeBg: 'bg-blue-100 dark:bg-blue-500/20', hoverClass: 'hover:bg-blue-50 dark:hover:bg-blue-500/10 hover:border-blue-300 dark:hover:border-blue-500/50' },
     { id: 'Books', icon: BookOpen, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-500/10', activeBg: 'bg-emerald-100 dark:bg-emerald-500/20', hoverClass: 'hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:border-emerald-300 dark:hover:border-emerald-500/50' },
-    { id: 'Other', icon: Package, color: 'text-gray-500 dark:text-gray-400', bg: 'bg-gray-50 dark:bg-gray-800', activeBg: 'bg-gray-100 dark:bg-gray-700', hoverClass: 'hover:bg-gray-50 dark:hover:bg-gray-800/80 hover:border-gray-300 dark:hover:border-gray-600' },
+    { id: 'Other', icon: Package, color: 'text-gray-500 dark:text-white/80', bg: 'bg-gray-50 dark:bg-gray-800', activeBg: 'bg-gray-100 dark:bg-gray-700', hoverClass: 'hover:bg-gray-50 dark:hover:bg-gray-800/80 hover:border-gray-300 dark:hover:border-gray-600' },
   ];
 
   const staggerList = {
@@ -375,19 +378,20 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass rounded-2xl p-6 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm border border-brand-100 dark:border-brand-900/30 bg-gradient-to-r from-brand-50 to-emerald-50 dark:from-brand-950/20 dark:to-emerald-950/20"
+        whileHover={{ scale: 1.01 }}
+        className="glass rounded-2xl p-6 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all duration-300 dark:hover:shadow-[0_0_30px_rgba(217,70,239,0.4)] dark:hover:border-fuchsia-500/50 bg-gradient-to-r from-brand-50 to-emerald-50 dark:from-purple-900/40 dark:to-fuchsia-900/40 relative z-10"
       >
         <div className="flex items-center gap-4">
           <div className="w-14 h-14 bg-brand-100 dark:bg-brand-500/20 rounded-full flex items-center justify-center text-brand-600 dark:text-brand-400">
             <User className="w-7 h-7" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white">{currentUser.name}</h3>
-            <p className="text-sm text-brand-600 dark:text-brand-400 font-medium">KindLink Donor</p>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white hover:text-fuchsia-300 dark:hover:text-fuchsia-300 transition-all duration-300 cursor-default">{currentUser.name}</h3>
+            <p className="text-sm text-brand-600 dark:text-fuchsia-400 font-medium">KindLink Donor</p>
           </div>
         </div>
         <div className="flex flex-col sm:items-end">
-          <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Community Rating</span>
+          <span className="text-sm font-medium text-gray-500 dark:text-white/80 mb-1">Community Rating</span>
           <span className="font-bold text-gray-900 dark:text-white flex items-center gap-1.5 bg-white dark:bg-gray-800 px-3 py-1.5 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 w-fit">
             ⭐ {currentUser.rating ? currentUser.rating.toFixed(1) : '5.0'}
           </span>
@@ -420,7 +424,7 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
               <CheckCircle2 className="w-10 h-10 text-green-500" />
             </motion.div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Donation Scheduled!</h2>
-            <p className="text-gray-500 dark:text-gray-400 mb-8">Thank you for your kindness. The NGO has been notified.</p>
+            <p className="text-gray-500 dark:text-white/80 mb-8">Thank you for your kindness. The NGO has been notified.</p>
             <motion.button 
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -436,14 +440,14 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
               <div className="w-16 h-16 bg-brand-50 dark:bg-brand-500/10 rounded-2xl flex items-center justify-center mb-4 shadow-sm border border-brand-100 dark:border-brand-500/20">
                 <HeartHandshake className="w-8 h-8 text-brand-600 dark:text-brand-400" />
               </div>
-              <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-2 tracking-tight">Make a Donation</h2>
-              <p className="text-gray-500 dark:text-gray-400 text-sm max-w-md">Your generosity can change lives. Fill out the details below to schedule your pickup or drop-off.</p>
+              <h2 className="text-3xl font-black text-gray-900 dark:text-white hover:text-fuchsia-300 dark:hover:text-fuchsia-300 mb-2 tracking-tight hover:scale-[1.02] transition-transform duration-300 cursor-default">Make a Donation</h2>
+              <p className="text-gray-500 dark:text-white/80 text-sm max-w-md group-hover:text-purple-200 transition-colors">Your generosity can change lives. Fill out the details below to schedule your pickup or drop-off.</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-8">
               {/* NGO Selection */}
               <div className="group">
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5 group-focus-within:text-brand-600 dark:group-focus-within:text-brand-400 transition-colors">Select Organization</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-white/90 mb-1.5 group-focus-within:text-brand-600 dark:group-focus-within:text-fuchsia-400 dark:group-hover:text-purple-300 transition-colors">Select Organization</label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                     <Building2 className="h-5 w-5 text-gray-400 group-focus-within:text-brand-500 transition-colors" />
@@ -452,20 +456,20 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
                     required
                     value={selectedNgo}
                     onChange={(e) => setSelectedNgo(e.target.value)}
-                    className="w-full appearance-none rounded-xl border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-900/60 text-gray-900 dark:text-white focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 hover:border-brand-300 dark:hover:border-brand-700 transition-all duration-300 py-3 pl-11 pr-10 shadow-sm outline-none backdrop-blur-sm cursor-pointer"
+                    className="w-full appearance-none rounded-xl border border-gray-200 dark:border-white/10 bg-white/60 dark:bg-black/40 text-gray-900 dark:text-white focus:bg-white dark:focus:bg-black/60 focus:ring-2 focus:ring-brand-500/50 dark:focus:ring-fuchsia-500/50 focus:border-brand-500 dark:focus:border-fuchsia-500 hover:border-brand-300 dark:hover:border-fuchsia-500/50 dark:focus:shadow-[0_0_15px_rgba(217,70,239,0.3)] transition-all duration-300 py-3 pl-11 pr-10 shadow-sm outline-none backdrop-blur-sm cursor-pointer"
                   >
                     <option value="" disabled>Choose an NGO...</option>
                     {ngos.map((ngo) => (
                       <option key={ngo.id} value={ngo.id}>{ngo.name} ({ngo.category}) - {ngo.rating ? ngo.rating.toFixed(1) : '5.0'} ⭐</option>
                     ))}
                   </select>
-                  <ChevronDown className="absolute right-3.5 top-3.5 h-5 w-5 text-gray-400 pointer-events-none" />
+                  <ChevronDown className="absolute right-3.5 top-3.5 h-5 w-5 text-gray-400 group-focus-within:text-brand-500 pointer-events-none transition-colors" />
                 </div>
               </div>
 
               {/* Category */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">What are you donating?</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-white/90 mb-2">What are you donating?</label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                   {categories.map((cat) => {
                     const Icon = cat.icon;
@@ -477,16 +481,17 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
                         key={cat.id}
                         type="button"
                         onClick={() => setCategory(cat.id)}
-                        className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all duration-300 ${
+                        className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all duration-300 relative overflow-hidden ${
                           isActive 
-                            ? `border-brand-500 shadow-md ${cat.activeBg}` 
-                            : `border-transparent bg-white dark:bg-gray-800 hover:shadow-sm border-gray-100 dark:border-gray-700/50 ${cat.hoverClass}`
+                            ? `border-brand-500 dark:border-transparent shadow-md ${cat.activeBg} dark:shadow-[0_0_20px_rgba(217,70,239,0.5)] dark:bg-gradient-to-br dark:from-purple-900/80 dark:to-fuchsia-800/80` 
+                            : `border-transparent bg-white dark:bg-black/40 hover:shadow-sm border-gray-100 dark:border-white/5 dark:hover:border-fuchsia-400/50 dark:hover:bg-gradient-to-br dark:hover:from-purple-900/20 dark:hover:to-fuchsia-900/20`
                         }`}
                       >
-                        <div className={`p-3 rounded-full mb-2 transition-transform duration-300 ${isActive ? 'scale-110 shadow-sm' : ''} ${cat.bg} ${cat.color}`}>
+                        {isActive && <div className="absolute inset-0 bg-gradient-to-br from-brand-500/10 to-transparent dark:from-purple-500/40 dark:to-fuchsia-500/40 pointer-events-none"></div>}
+                        <div className={`p-3 rounded-full mb-2 transition-transform duration-300 ${isActive ? 'scale-110 shadow-sm' : 'group-hover:scale-110'} ${cat.bg} ${cat.color}`}>
                           <Icon className="w-6 h-6" />
                         </div>
-                        <span className={`text-sm font-bold ${isActive ? 'text-brand-700 dark:text-brand-400' : 'text-gray-600 dark:text-gray-300'}`}>
+                        <span className={`text-sm font-bold relative z-10 ${isActive ? 'text-brand-700 dark:text-brand-400' : 'text-gray-600 dark:text-white/90'}`}>
                           {cat.id}
                         </span>
                       </motion.button>
@@ -505,7 +510,7 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
                     className="overflow-hidden"
                   >
                     <div className="pt-1 group">
-                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5 group-focus-within:text-brand-600 dark:group-focus-within:text-brand-400 transition-colors">Please specify</label>
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-white/90 mb-1.5 group-focus-within:text-brand-600 dark:group-focus-within:text-brand-400 transition-colors">Please specify</label>
                       <input
                         type="text"
                         required
@@ -521,7 +526,7 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
 
               {/* Image Upload */}
               <div className="group">
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 group-focus-within:text-brand-600 dark:group-focus-within:text-brand-400 transition-colors">Upload Image</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-white/90 mb-2 group-focus-within:text-brand-600 dark:group-focus-within:text-brand-400 transition-colors">Upload Image</label>
                 <motion.div 
                   whileHover={{ scale: 1.01 }}
                   onClick={() => fileInputRef.current?.click()}
@@ -560,12 +565,12 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors"
+                        className="flex flex-col items-center justify-center text-gray-500 dark:text-white/80 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors"
                       >
                         <div className="w-16 h-16 bg-white dark:bg-gray-900 rounded-full flex items-center justify-center mb-4 shadow-sm border border-gray-100 dark:border-gray-800 group-hover:border-brand-200 dark:group-hover:border-brand-500/30 group-hover:bg-brand-50 dark:group-hover:bg-brand-500/20 transition-colors">
                           <UploadCloud className="w-8 h-8 text-gray-400 group-hover:text-brand-500 transition-colors" />
                         </div>
-                        <span className="font-bold text-gray-700 dark:text-gray-300 mb-1 group-hover:text-brand-700 dark:group-hover:text-brand-400 transition-colors">Click to upload a photo</span>
+                        <span className="font-bold text-gray-700 dark:text-white/90 mb-1 group-hover:text-brand-700 dark:group-hover:text-brand-400 transition-colors">Click to upload a photo</span>
                         <span className="text-xs font-medium text-gray-500">PNG, JPG up to 5MB</span>
                       </motion.div>
                     )}
@@ -576,7 +581,7 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
               {/* Date and Time */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="group">
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5 group-focus-within:text-brand-600 dark:group-focus-within:text-brand-400 transition-colors">Preferred Date</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-white/90 mb-1.5 group-focus-within:text-brand-600 dark:group-focus-within:text-fuchsia-400 dark:group-hover:text-purple-300 transition-colors">Preferred Date</label>
                   <div className="relative">
                     <input
                       type="date"
@@ -584,13 +589,13 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
                       value={dateSlot}
                       onChange={(e) => setDateSlot(e.target.value)}
                       min={new Date().toISOString().split('T')[0]}
-                      className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-900/60 text-gray-900 dark:text-white focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 hover:border-brand-300 dark:hover:border-brand-700 transition-all duration-300 py-3 pl-11 pr-4 shadow-sm outline-none backdrop-blur-sm cursor-pointer"
+                      className="w-full rounded-xl border border-gray-200 dark:border-white/10 bg-white/60 dark:bg-black/40 text-gray-900 dark:text-white focus:bg-white dark:focus:bg-black/60 focus:ring-2 focus:ring-brand-500/50 dark:focus:ring-fuchsia-500/50 focus:border-brand-500 dark:focus:border-fuchsia-500 hover:border-brand-300 dark:hover:border-fuchsia-500/50 dark:focus:shadow-[0_0_15px_rgba(217,70,239,0.3)] transition-all duration-300 py-3 pl-11 pr-4 shadow-sm outline-none backdrop-blur-sm cursor-pointer"
                     />
                     <Calendar className="absolute left-3.5 top-3.5 h-5 w-5 text-gray-400 group-focus-within:text-brand-500 transition-colors pointer-events-none" />
                   </div>
                 </div>
                 <div className="group">
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5 group-focus-within:text-brand-600 dark:group-focus-within:text-brand-400 transition-colors">Preferred Time Slot</label>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-white/90 mb-1.5 group-focus-within:text-brand-600 dark:group-focus-within:text-fuchsia-400 dark:group-hover:text-purple-300 transition-colors">Preferred Time Slot</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                       <Clock className="h-5 w-5 text-gray-400 group-focus-within:text-brand-500 transition-colors" />
@@ -599,7 +604,7 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
                       required
                       value={timeSlot}
                       onChange={(e) => setTimeSlot(e.target.value)}
-                      className="w-full appearance-none rounded-xl border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-900/60 text-gray-900 dark:text-white focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 hover:border-brand-300 dark:hover:border-brand-700 transition-all duration-300 py-3 pl-11 pr-10 shadow-sm outline-none backdrop-blur-sm cursor-pointer"
+                      className="w-full appearance-none rounded-xl border border-gray-200 dark:border-white/10 bg-white/60 dark:bg-black/40 text-gray-900 dark:text-white focus:bg-white dark:focus:bg-black/60 focus:ring-2 focus:ring-brand-500/50 dark:focus:ring-fuchsia-500/50 focus:border-brand-500 dark:focus:border-fuchsia-500 hover:border-brand-300 dark:hover:border-fuchsia-500/50 dark:focus:shadow-[0_0_15px_rgba(217,70,239,0.3)] transition-all duration-300 py-3 pl-11 pr-10 shadow-sm outline-none backdrop-blur-sm cursor-pointer"
                     >
                       <option value="" disabled>Select a slot...</option>
                       <option value="Morning (9AM - 12PM)">Morning (9AM - 12PM)</option>
@@ -613,8 +618,8 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
 
               {/* Map Location Picker */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Pickup Location</label>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">Search for an address or drag the map and click to pinpoint your exact pickup location.</p>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-white/90 mb-2">Pickup Location</label>
+                <p className="text-xs text-gray-500 dark:text-white/80 mb-3">Search for an address or drag the map and click to pinpoint your exact pickup location.</p>
                 
                 <div className="flex gap-3 mb-4 group">
                   <div className="relative flex-1">
@@ -627,7 +632,7 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
                       onChange={(e) => setSearchAddress(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleSearchLocation())}
                       placeholder="Enter street, city, or zip code"
-                      className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-900/60 text-gray-900 dark:text-white focus:bg-white dark:focus:bg-gray-800 focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 hover:border-brand-300 dark:hover:border-brand-700 transition-all duration-300 py-3 pl-11 pr-4 shadow-sm outline-none backdrop-blur-sm"
+                      className="w-full rounded-xl border border-gray-200 dark:border-white/10 bg-white/60 dark:bg-black/40 text-gray-900 dark:text-white focus:bg-white dark:focus:bg-black/60 focus:ring-2 focus:ring-brand-500/50 dark:focus:ring-fuchsia-500/50 focus:border-brand-500 dark:focus:border-fuchsia-500 hover:border-brand-300 dark:hover:border-fuchsia-500/50 dark:focus:shadow-[0_0_15px_rgba(217,70,239,0.3)] transition-all duration-300 py-3 pl-11 pr-4 shadow-sm outline-none backdrop-blur-sm"
                     />
                   </div>
                   <button
@@ -668,7 +673,7 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
                       setTimeSlot('');
                       setSearchAddress('');
                     }}
-                    className="px-6 py-4 text-sm font-bold text-gray-400 hover:text-gray-200 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-700 hover:to-gray-800 border border-gray-700 rounded-xl transition-all w-full sm:w-auto text-center shadow-md"
+                    className="px-6 py-4 text-sm font-bold text-gray-400 hover:text-gray-200 dark:bg-black/50 dark:hover:bg-fuchsia-900/20 bg-gray-100 hover:bg-gray-200 border border-gray-200 dark:border-white/10 rounded-xl transition-all w-full sm:w-auto text-center shadow-sm"
                   >
                     Clear Form
                   </button>
@@ -677,9 +682,12 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
                     whileTap={{ scale: 0.98 }}
                     type="submit"
                     disabled={isSubmitting || !selectedNgo || !category || (category==='Other' && !customCategory) || !dateSlot || !timeSlot}
-                    className="flex-1 w-full bg-gradient-to-r from-gray-900 via-emerald-950 to-black hover:from-gray-800 hover:via-emerald-900 hover:to-gray-900 border border-emerald-800/50 hover:border-emerald-500/50 disabled:opacity-90 disabled:saturate-50 disabled:cursor-not-allowed text-emerald-400 hover:text-emerald-300 font-bold text-lg py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(4,120,87,0.3)] hover:shadow-[0_0_30px_rgba(4,120,87,0.5)] flex items-center justify-center gap-2"
+                    className="flex-1 w-full bg-brand-600 hover:bg-brand-500 dark:bg-gradient-to-r dark:from-purple-600 dark:to-fuchsia-600 dark:hover:from-purple-500 dark:hover:to-fuchsia-500 disabled:opacity-90 disabled:saturate-50 disabled:cursor-not-allowed text-white font-bold text-lg py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(34,197,94,0.3)] dark:shadow-[0_0_20px_rgba(217,70,239,0.5)] hover:shadow-[0_0_30px_rgba(34,197,94,0.5)] dark:hover:shadow-[0_0_30px_rgba(217,70,239,0.8)] flex items-center justify-center gap-2 relative overflow-hidden group"
                   >
-                  {isSubmitting ? 'Scheduling...' : <>Schedule Donation <CheckCircle2 className="w-5 h-5" /></>}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
+                  <span className="relative z-10 flex items-center gap-2">
+                    {isSubmitting ? 'Scheduling...' : <>Schedule Donation <CheckCircle2 className="w-5 h-5" /></>}
+                  </span>
                 </motion.button>
               </div>
             </form>
@@ -689,8 +697,8 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
 
       {/* Donator History */}
       <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800 overflow-hidden">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white">Donated Items to NGOs</h3>
+        <div className="flex items-center justify-between mb-6 group cursor-default">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white hover:text-fuchsia-300 dark:hover:text-fuchsia-300 group-hover:scale-[1.02] origin-left transition-transform duration-300">Donated Items to NGOs</h3>
           <button 
             onClick={() => setShowHistory(!showHistory)}
             className="px-5 py-2.5 bg-gradient-to-r from-gray-900 to-emerald-950 hover:from-black hover:to-emerald-900 border border-emerald-800/50 hover:border-emerald-600/50 text-emerald-400 hover:text-emerald-300 rounded-xl text-sm font-bold transition-all shadow-md shadow-emerald-900/20"
@@ -709,7 +717,7 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
             >
               {donations.filter(d => d.donatorId === (currentUser?.id || currentUser?.credential || 'unknown_user')).length === 0 ? (
                 <div 
-                  className="text-center text-gray-500 dark:text-gray-400 py-8 bg-white/50 dark:bg-gray-900/50 rounded-xl border border-gray-100 dark:border-gray-800 mb-6"
+                  className="text-center text-gray-500 dark:text-white/80 py-8 bg-white/50 dark:bg-gray-900/50 rounded-xl border border-gray-100 dark:border-gray-800 mb-6"
                 >
                   You haven't made any donations yet.
                 </div>
@@ -740,7 +748,7 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
                             <h4 className="font-semibold text-gray-900 dark:text-white">
                               {donation.category === 'Other' ? donation.customCategory : donation.category}
                             </h4>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">To: {ngo ? ngo.name : 'Unknown NGO'}</p>
+                            <p className="text-sm text-gray-500 dark:text-white/80">To: {ngo ? ngo.name : 'Unknown NGO'}</p>
                             <p className="text-xs text-gray-400 mt-1">
                               {new Date(donation.dateSlot).toLocaleDateString()} • {donation.timeSlot}
                             </p>
@@ -774,7 +782,7 @@ function DonatorDashboard({ ngos, addDonation, currentUser, donations, removeDon
                                    }`}>
                                      {isCompleted ? <CheckCircle2 className="w-3.5 h-3.5" /> : (idx + 1)}
                                    </div>
-                                   <span className={`text-[10px] sm:text-xs font-semibold text-center ${isCurrent ? 'text-brand-600 dark:text-brand-400' : isCompleted ? 'text-gray-700 dark:text-gray-300' : 'text-gray-400'}`}>
+                                   <span className={`text-[10px] sm:text-xs font-semibold text-center ${isCurrent ? 'text-brand-600 dark:text-brand-400' : isCompleted ? 'text-gray-700 dark:text-white/90' : 'text-gray-400'}`}>
                                      {labels[idx]}
                                    </span>
                                  </div>
@@ -838,7 +846,7 @@ function AppRating() {
           <HeartHandshake className="w-8 h-8 text-green-500" />
         </div>
         <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Thank You for Your Feedback!</h3>
-        <p className="text-gray-500 dark:text-gray-400">Your rating and feedback help us improve KindLink and bring more smiles to the community.</p>
+        <p className="text-gray-500 dark:text-white/80">Your rating and feedback help us improve KindLink and bring more smiles to the community.</p>
       </div>
     );
   }
@@ -846,7 +854,7 @@ function AppRating() {
   return (
     <div className="mt-8 glass rounded-2xl p-8 text-center border border-gray-200 dark:border-gray-800">
       <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">How is your experience with KindLink?</h3>
-      <p className="text-gray-500 dark:text-gray-400 mb-6">We value your feedback and it helps us connect more donors with NGOs efficiently.</p>
+      <p className="text-gray-500 dark:text-white/80 mb-6">We value your feedback and it helps us connect more donors with NGOs efficiently.</p>
       <div className="flex items-center justify-center gap-2">
         {[1, 2, 3, 4, 5].map((star) => (
           <motion.button
@@ -1022,11 +1030,11 @@ function ReceiverDashboard({ donations, currentUser, updateDonationStatus, remov
               </div>
             </div>
             <div className="space-y-3 mt-4">
-              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-white/80">
                 <MapPin className="w-4 h-4 text-gray-400" />
                 <span>{myNgoInfo?.address || 'Location on file'}</span>
               </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-white/80">
                 <Phone className="w-4 h-4 text-gray-400" />
                 <span>{myNgoInfo?.credential || currentUser.credential}</span>
               </div>
@@ -1034,7 +1042,7 @@ function ReceiverDashboard({ donations, currentUser, updateDonationStatus, remov
           </div>
           <div className="mt-6 pt-5 border-t border-gray-100 dark:border-gray-800">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Community Rating</span>
+              <span className="text-sm font-medium text-gray-500 dark:text-white/80">Community Rating</span>
               <span className="font-bold text-gray-900 dark:text-white flex items-center gap-1 bg-brand-50 dark:bg-brand-500/20 px-2 py-1 rounded-md text-brand-700 dark:text-brand-400 text-sm">
                 ⭐ {myNgoInfo?.rating ? myNgoInfo.rating.toFixed(1) : '5.0'}
               </span>
@@ -1046,14 +1054,14 @@ function ReceiverDashboard({ donations, currentUser, updateDonationStatus, remov
         <div className="glass rounded-2xl p-6 lg:col-span-2 border border-gray-200 dark:border-gray-800 shadow-sm flex flex-col hover:shadow-md transition-shadow">
           <div className="grid grid-cols-2 gap-4 mb-6">
              <div className="bg-white/50 dark:bg-gray-900/50 p-4 rounded-xl border border-gray-100 dark:border-gray-800 flex flex-col justify-center">
-               <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Today's Active Donations</p>
+               <p className="text-sm font-medium text-gray-500 dark:text-white/80 mb-1">Today's Active Donations</p>
                <div className="flex items-end gap-2">
                  <span className="text-4xl font-bold text-gray-900 dark:text-white tracking-tight">{todaysDonations.length}</span>
                  <span className="text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-500/10 px-1.5 py-0.5 rounded font-medium flex items-center mb-1.5 border border-green-100 dark:border-green-500/20"><TrendingUp className="w-3 h-3 mr-1"/> Activity</span>
                </div>
              </div>
              <div className="bg-white/50 dark:bg-gray-900/50 p-4 rounded-xl border border-gray-100 dark:border-gray-800 flex flex-col justify-center">
-               <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Total Received</p>
+               <p className="text-sm font-medium text-gray-500 dark:text-white/80 mb-1">Total Received</p>
                <div className="flex items-end gap-2">
                  <span className="text-4xl font-bold text-gray-900 dark:text-white tracking-tight">{myDonations.length}</span>
                  <span className="text-xs text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-500/10 px-1.5 py-0.5 rounded font-medium flex items-center mb-1.5 border border-brand-100 dark:border-brand-500/20">All time</span>
@@ -1115,7 +1123,7 @@ function ReceiverDashboard({ donations, currentUser, updateDonationStatus, remov
         <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">Incoming Donations</h2>
-            <p className="text-gray-500 dark:text-gray-400 text-sm">Manage resources directed to your organization.</p>
+            <p className="text-gray-500 dark:text-white/80 text-sm">Manage resources directed to your organization.</p>
           </div>
         </div>
 
@@ -1123,13 +1131,13 @@ function ReceiverDashboard({ donations, currentUser, updateDonationStatus, remov
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="glass rounded-2xl p-12 text-center flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 border-dashed border-2 border-gray-200 dark:border-gray-800"
+            className="glass rounded-2xl p-12 text-center flex flex-col items-center justify-center text-gray-500 dark:text-white/80 border-dashed border-2 border-gray-200 dark:border-gray-800"
           >
             <div className="w-20 h-20 bg-gray-50 dark:bg-gray-900 rounded-full flex items-center justify-center mb-5 shadow-inner">
               <HeartHandshake className="w-10 h-10 text-brand-400 dark:text-brand-600" />
             </div>
             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Awaiting Donations</h3>
-            <p className="max-w-md text-gray-500 dark:text-gray-400">When generous individuals schedule a donation to your organization, the details will seamlessly appear right here.</p>
+            <p className="max-w-md text-gray-500 dark:text-white/80">When generous individuals schedule a donation to your organization, the details will seamlessly appear right here.</p>
           </motion.div>
         ) : (
           <motion.div 
@@ -1172,7 +1180,7 @@ function ReceiverDashboard({ donations, currentUser, updateDonationStatus, remov
                           <p className="text-sm font-semibold text-gray-900 dark:text-white">
                             {new Date(donation.dateSlot).toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
                           </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mt-0.5">{donation.timeSlot}</p>
+                          <p className="text-xs text-gray-500 dark:text-white/80 font-medium mt-0.5">{donation.timeSlot}</p>
                         </div>
                       </div>
 
@@ -1182,7 +1190,7 @@ function ReceiverDashboard({ donations, currentUser, updateDonationStatus, remov
                         </div>
                         <div>
                           <p className="text-sm font-semibold text-gray-900 dark:text-white">{donator ? donator.name : 'Generous Donor'}</p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{donator ? donator.credential : 'Contact not available'}</p>
+                          <p className="text-xs text-gray-500 dark:text-white/80 mt-0.5">{donator ? donator.credential : 'Contact not available'}</p>
                         </div>
                       </div>
 
@@ -1278,7 +1286,7 @@ function ReceiverDashboard({ donations, currentUser, updateDonationStatus, remov
               
               <form onSubmit={handleAddActivity} className="p-6 space-y-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Event Name</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-white/90 mb-1">Event Name</label>
                   <input
                     type="text"
                     required
@@ -1291,7 +1299,7 @@ function ReceiverDashboard({ donations, currentUser, updateDonationStatus, remov
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-white/90 mb-1">Date</label>
                     <input
                       type="date"
                       required
@@ -1301,7 +1309,7 @@ function ReceiverDashboard({ donations, currentUser, updateDonationStatus, remov
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Time</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-white/90 mb-1">Time</label>
                     <input
                       type="text"
                       required
@@ -1314,7 +1322,7 @@ function ReceiverDashboard({ donations, currentUser, updateDonationStatus, remov
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Location</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-white/90 mb-1">Location</label>
                   <input
                     type="text"
                     required
@@ -1329,7 +1337,7 @@ function ReceiverDashboard({ donations, currentUser, updateDonationStatus, remov
                   <button
                     type="button"
                     onClick={() => setShowActivityModal(false)}
-                    className="px-5 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+                    className="px-5 py-2.5 text-sm font-medium text-gray-600 dark:text-white/80 hover:text-gray-900 dark:hover:text-white transition-colors"
                   >
                     Cancel
                   </button>

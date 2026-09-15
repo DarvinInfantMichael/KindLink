@@ -19,11 +19,11 @@ export default function Navbar() {
         <Link to="/" className="flex items-center gap-2 group cursor-pointer" onClick={closeMenu}>
           <motion.div 
             whileHover={{ rotate: 12, scale: 1.1 }}
-            className="bg-brand-500 p-2 rounded-xl transition-transform duration-300 shadow-[0_0_15px_rgba(16,185,129,0.5)]"
+            className="bg-gradient-to-br from-purple-500 to-fuchsia-500 p-2 rounded-xl transition-transform duration-300 shadow-[0_0_15px_rgba(217,70,239,0.5)] group-hover:shadow-[0_0_25px_rgba(217,70,239,0.7)]"
           >
             <HeartHandshake className="w-6 h-6 text-white" />
           </motion.div>
-          <span className="text-2xl font-black text-white tracking-tight drop-shadow-md">KindLink</span>
+          <span className="text-2xl font-black text-white tracking-tight drop-shadow-md group-hover:to-fuchsia-200 transition-colors">KindLink</span>
         </Link>
         
         {/* Desktop Navigation */}
@@ -32,7 +32,7 @@ export default function Navbar() {
             <Link 
               key={link.name}
               to={link.path} 
-              className={`text-sm font-bold uppercase tracking-wider transition-colors drop-shadow-sm ${location.pathname === link.path ? 'text-brand-400 border-b-2 border-brand-500 pb-1' : 'text-white/70 hover:text-white'}`}
+              className={`text-sm font-bold uppercase tracking-wider transition-all duration-300 drop-shadow-sm ${location.pathname === link.path ? 'text-fuchsia-300 border-b-2 border-fuchsia-500 pb-1' : 'text-white/70 hover:text-fuchsia-300'}`}
             >
               {link.name}
             </Link>
@@ -41,9 +41,9 @@ export default function Navbar() {
 
         {/* Right Actions & Mobile Toggle */}
         <div className="flex items-center gap-3 sm:gap-4">
-          <Link to="/login" className="text-sm font-bold text-white/80 hover:text-white transition-colors hidden sm:block uppercase tracking-wider drop-shadow-sm">Log in</Link>
+          <Link to="/login" className="text-sm font-bold text-white/80 hover:text-fuchsia-300 transition-all hidden sm:block uppercase tracking-wider drop-shadow-sm">Log in</Link>
           <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.95 }}>
-            <Link to="/register" onClick={closeMenu} className="text-xs sm:text-sm font-bold uppercase tracking-wider bg-brand-500 text-white hover:bg-brand-600 px-4 sm:px-6 py-2 sm:py-2.5 rounded-full shadow-[0_0_15px_rgba(16,185,129,0.4)] hover:shadow-[0_0_20px_rgba(16,185,129,0.6)] transition-all">Volunteer</Link>
+            <Link to="/register" onClick={closeMenu} className="text-xs sm:text-sm font-bold uppercase tracking-wider bg-gradient-to-r from-purple-500 to-fuchsia-500 text-white hover:from-purple-400 hover:to-fuchsia-400 px-4 sm:px-6 py-2 sm:py-2.5 rounded-full shadow-[0_0_15px_rgba(217,70,239,0.4)] hover:shadow-[0_0_20px_rgba(217,70,239,0.6)] transition-all">Volunteer</Link>
           </motion.div>
           
           <button 
@@ -70,7 +70,7 @@ export default function Navbar() {
                   key={link.name}
                   to={link.path}
                   onClick={closeMenu}
-                  className={`text-sm font-bold uppercase tracking-wider block p-3 rounded-xl ${location.pathname === link.path ? 'bg-brand-500/20 text-brand-400' : 'text-white/70 hover:bg-white/5 hover:text-white'}`}
+                  className={`text-sm font-bold uppercase tracking-wider block p-3 rounded-xl transition-colors ${location.pathname === link.path ? 'bg-fuchsia-500/20 text-fuchsia-400' : 'text-white/70 hover:bg-white/5 hover:text-fuchsia-300'}`}
                 >
                   {link.name}
                 </Link>
